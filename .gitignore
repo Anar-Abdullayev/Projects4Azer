@@ -1,0 +1,217 @@
+########################################
+# OS-SPECIFIC FILES
+########################################
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+__MACOSX/
+
+########################################
+# VISUAL STUDIO / .NET
+########################################
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]est[Rr]esults/
+*.VisualState.xml
+*.userosscache
+*.suo
+*.user
+*.userprefs
+*.rsuser
+*.cache
+*.ilk
+*.pdb
+*.obj
+*.exe
+*.dll
+*.appx
+*.appxsym
+*.appxupload
+*.vspscc
+*.vssscc
+*.builds
+*.log
+*.tlog
+*.vspscc
+*.dbmdl
+*.dbproj.schemaview
+*.bak
+*.Backup
+*.orig
+*.tmp
+*.temp
+
+# Visual Studio folders
+.vs/
+.vscode/
+.idea/
+
+# ASP.NET temporary files
+# (applies for ASP.NET and ASP.NET Core)
+wwwroot/lib/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+Properties/launchSettings.json
+*.publish.xml
+*.pubxml
+*.pubxml.user
+BundleArtifacts/
+_PublishedWebsites/
+publish/
+
+# Rider IDE
+.idea/
+*.iml
+.idea_modules/
+
+# JetBrains
+*.dotCover
+*.dotTrace
+*.dotMemory
+*.ReSharper
+_ReSharper*/
+*.sln.docstates
+
+########################################
+# PYTHON
+########################################
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Distribution / packaging
+build/
+dist/
+downloads/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+.cache
+.pytest_cache/
+nosetests.xml
+test-results/
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Pytype
+.pytype/
+
+# Pylint
+pylint.log
+
+# Jupyter and Python scripts
+*.ipynb
+*.pyproj
+
+########################################
+# COMMON PROJECT FILES
+########################################
+# Logs and reports
+*.log
+logs/
+*.csv
+*.sqlite
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Environment variables
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# Security
+secrets.json
+appsettings.Development.json
+
+########################################
+# FRONTEND (if React, Angular, etc.)
+########################################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+coverage/
+
+########################################
+# MISC
+########################################
+# Backup files
+*.bak
+*.orig
+
+# VS Code workspace
+*.code-workspace
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+*.dockerfile
+*.env
+
+# Python notebook checkpoints
+.ipynb_checkpoints/
+
+########################################
+# END OF FILE
+########################################
