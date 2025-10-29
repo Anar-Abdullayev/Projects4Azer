@@ -12,18 +12,16 @@ namespace TapAzDataCatcher
 {
     public class TapazHelper : IContentHelper<TapAzProperty>
     {
-        private static readonly string baseUrl = "https://tap.az/elanlar/dasinmaz-emlak";
-
         public async Task<string?> GetPage(string url)
         {
-            url = url.Replace("/elanlar/dasinmaz-emlak", "");
+            url = Constants.BaseUrl + url;
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
                 try
                 {
-                    string html = await client.GetStringAsync(baseUrl + url);
+                    string html = await client.GetStringAsync(url);
                     return html;
                 }
                 catch (HttpRequestException e)
@@ -83,7 +81,7 @@ namespace TapAzDataCatcher
             property.Price = DocumentHelper.GetPrice(doc);
             property.Owner = DocumentHelper.GetOwner(doc);
             property.PhoneNumbers = await DocumentHelper.GetPhoneNumbersAsync(advId) ?? "";
-            property.OwnerType = DocumentHelper.GetOwnerType(doc);
+            property.OwnerType = await DocumentHelper.GetOwnerType(doc);
 
             return property;
         }

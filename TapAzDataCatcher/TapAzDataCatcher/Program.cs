@@ -19,7 +19,7 @@ namespace TapAzDataCatcher
             var formattedDates = MenuHelper.GetFormattedDatesUntil(targetDate);
             Console.WriteLine($"Təsdiqlənmiş gün: {dayDifference} gün öncəyədək ({tillDateString} daxil deyil).");
             Console.WriteLine($"Başlayır...");
-            string nextUrl = "";
+            string nextUrl = "/elanlar/dasinmaz-emlak";
             while (continueSearch)
             {
                 var htmlContent = await tapazHelper.GetPage(nextUrl);
@@ -43,7 +43,6 @@ namespace TapAzDataCatcher
                                 Console.WriteLine($"ID-si {propertyNode.Item1} olan elan oxunulub. Ötürülür...");
                                 continue;
                             }
-
                             var detailHtml = await tapazHelper.GetPage(propertyNode.Item2);
                             if (detailHtml == null)
                                 continue;
@@ -53,7 +52,7 @@ namespace TapAzDataCatcher
                             databaseService.InsertRecord(property);
                             Console.WriteLine("--------------------------------");
                             Console.WriteLine($"Yeni elan tapıldı");
-                            Console.WriteLine($"Elanın linki: {propertyNode.Item2}");
+                            Console.WriteLine($"Elanın linki: {Constants.BaseUrl}{propertyNode.Item2}");
                             Console.WriteLine($"Elanın tarixi: {propertyNode.Item3}");
                             property.PrintDetails();
                             Console.WriteLine("--------------------------------");

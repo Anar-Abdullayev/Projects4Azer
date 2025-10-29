@@ -74,15 +74,43 @@ namespace DataCatcherBot
             return ownerNode.InnerText.Trim();
         }
 
-        public static string GetOwnerType(HtmlDocument doc)
+        public static async Task<string> GetOwnerType(HtmlDocument doc)
         {
             var ownerTypeNode = doc.DocumentNode.SelectSingleNode("//span[contains(@class, 'product-shop__owner-ads')]");
             string ownerType = "mülkiyyətçi";
             if (ownerTypeNode is null)
                 ownerTypeNode = doc.DocumentNode.SelectSingleNode("//a[contains(@class, 'product-owner__info-ads')]");
-
             if (ownerTypeNode is not null)
-                ownerType = "vasitəçi (agent)";
+            {
+                if (ownerTypeNode.HasClass("product-owner__info-ads"))
+                {
+                    var tapazHelper = new TapazHelper();
+                    var ownerAdvsPageString = await tapazHelper.GetPage(ownerTypeNode.GetAttributeValue("href", ""));
+                    if (ownerAdvsPageString is not null)
+                    {
+                        HtmlDocument ownerAdvsDoc = new HtmlDocument();
+                        ownerAdvsDoc.LoadHtml(ownerAdvsPageString);
+                        var ownerAdvLinks = ownerAdvsDoc.DocumentNode.SelectNodes("//div[contains(@class, 'products-i') and contains(@class, 'rounded')]/a");
+                        var houseCount = 0;
+                        if (ownerAdvLinks is not null)
+                        {
+                            foreach (var advLink in ownerAdvLinks)
+                            {
+                                if (advLink.GetAttributeValue("href", "").Contains("dasinmaz-emlak"))
+                                    houseCount++; 
+                                if (houseCount > 2)
+                                {
+                                    ownerType = "vasitəçi (agent)";
+                                    break;
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+                else
+                    ownerType = "vasitəçi (agent)";
+            }
             return ownerType;
         }
 
