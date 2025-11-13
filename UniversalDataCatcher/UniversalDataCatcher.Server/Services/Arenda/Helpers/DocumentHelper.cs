@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
+using System.Xml;
 
-namespace DataCatcherBot
+namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
 {
     public static class DocumentHelper
     {
@@ -47,7 +48,7 @@ namespace DataCatcherBot
 
             return features;
         }
-        
+
         public static string GetAddress(HtmlNode node)
         {
             var addressNode = node.SelectSingleNode(".//span[contains(@class,'elan_unvan_txt')]");
@@ -74,7 +75,7 @@ namespace DataCatcherBot
             if (ownerNode != null)
                 return HtmlEntity.DeEntitize(ownerNode.InnerText.Trim());
             return "";
-        }  
+        }
 
         public static List<string>? GetContactNumbers(HtmlNode node)
         {

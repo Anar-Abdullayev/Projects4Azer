@@ -1,11 +1,12 @@
 ﻿using HtmlAgilityPack;
+using UniversalDataCatcher.Server.Services.Arenda.Model;
 
-namespace DataCatcherBot
+namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
 {
     public static class ArendaHelper
     {
         private static readonly string url = "https://arenda.az/filtirli-axtaris/XXPAGEXX/?home_search=1&lang=1&site=1&home_s=1&price_min=&price_max=&sahe_min=&sahe_max=&mertebe_min=&mertebe_max=&y_mertebe_min=&y_mertebe_max=&axtar=&order=2";
-       
+
         public static async Task<string?> GetPage(int page)
         {
 
@@ -70,7 +71,7 @@ namespace DataCatcherBot
                             continueSearch = false;
                         continue;
                     }
-                    Tuple<string,string,string> propertyTuple = new(liId, href, date);
+                    Tuple<string, string, string> propertyTuple = new(liId, href, date);
                     propertyNodes.Add(propertyTuple);
                 }
                 return propertyNodes;
@@ -103,7 +104,7 @@ namespace DataCatcherBot
             property.SecondaryTitle = secondaryTitle;
             property.PropertyMainInfos = propertyMainInfos;
             property.RoomCount = roomCount;
-            property.PropertySize = propertySize;  
+            property.PropertySize = propertySize;
             property.Description = description;
             property.PropertyFeatures = propertyFeatures;
             property.Address = address;

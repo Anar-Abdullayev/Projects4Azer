@@ -55,6 +55,3 @@ namespace DataCatcherBot
         }
     }
 }
-
-// (elan_desc_sides elan_desc_left_side) section
-// (elan_desc_sides elan_desc_right_side elan_in_right) section
