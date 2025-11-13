@@ -1,3 +1,6 @@
+﻿
+using System.Text;
+using UniversalDataCatcher.Server.Services;
 
 namespace UniversalDataCatcher.Server
 {
@@ -5,13 +8,15 @@ namespace UniversalDataCatcher.Server
     {
         public static void Main(string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // MSSql Server-də database və table-ləri yaradır.
+            MSSqlDatabaseService.Initialize(builder.Configuration);
+
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
