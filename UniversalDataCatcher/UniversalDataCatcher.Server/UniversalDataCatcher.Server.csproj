@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Lalafo\" />
+    <Folder Include="Bots\Lalafo\" />
   </ItemGroup>
 
 </Project>
