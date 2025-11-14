@@ -2,7 +2,7 @@
 {
     public class ArendaRecord
     {
-        public string Id { get; set; }
+        public string bina_id { get; set; }
         public DateTime InsertDate { get; set; }
     }
 }

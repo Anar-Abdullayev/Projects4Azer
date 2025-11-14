@@ -25,8 +25,12 @@ namespace UniversalDataCatcher.Server.Services
                 throw new Exception("Empty connection string");
 
             EnsureDatabaseCreated(_databaseName);
+            var universalTableName = configuration["GlobalSettings:Tables:Universal"]!;
             var arendaTableName = configuration["GlobalSettings:Tables:ArendaAz"]!;
-            EnsureArendaTableCreated(arendaTableName);
+            var lalafoTableName = configuration["GlobalSettings:Tables:LalafoAz"]!;
+            EnsureTableCreated(universalTableName);
+            EnsureTableCreated(arendaTableName);
+            EnsureTableCreated(lalafoTableName);
         }
         private static void EnsureDatabaseCreated(string _databaseName)
         {
@@ -42,35 +46,50 @@ namespace UniversalDataCatcher.Server.Services
                 connection.Close();
             }
         }
-        private static void EnsureArendaTableCreated(string tableName)
+
+        private static void EnsureTableCreated(string tableName)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                connection.Execute($@"
-                    IF NOT EXISTS (SELECT * 
-                                   FROM INFORMATION_SCHEMA.TABLES 
-                                   WHERE TABLE_SCHEMA = 'dbo' 
-                                   AND TABLE_NAME = '{tableName}')
-                    BEGIN
-                        CREATE TABLE dbo.{tableName} (
-                            Id NVARCHAR(50) NOT NULL PRIMARY KEY,
-                            MainTitle NVARCHAR(500) NOT NULL,
-                            SecondaryTitle NVARCHAR(500) NULL,
-                            Address NVARCHAR(500) NOT NULL,
-                            Description NVARCHAR(MAX) NOT NULL,
-                            Price FLOAT NOT NULL,
-                            PropertySize FLOAT NULL,
-                            RoomCount INT NULL,
-                            ContactNumbers NVARCHAR(MAX) NULL,
-                            Owner NVARCHAR(200) NOT NULL,
-                            PropertyFeatures NVARCHAR(MAX) NULL,
-                            PropertyMainInfos NVARCHAR(MAX) NULL,
-                            Created_At DATETIME NOT NULL DEFAULT GETDATE()
-                        );
-                    END
+                connection.Execute(@$"
+                        IF NOT EXISTS (
+                            SELECT * FROM INFORMATION_SCHEMA.TABLES 
+                            WHERE TABLE_SCHEMA = 'dbo' 
+                            AND TABLE_NAME = '{tableName}'
+                        )
+                        BEGIN
+                            CREATE TABLE dbo.{tableName} (
+                                id BIGINT IDENTITY(1,1) PRIMARY KEY,
+                                bina_id int NULL,
+                                main_title NVARCHAR(MAX) NULL,
+                                address NVARCHAR(MAX) NULL,
+                                area NVARCHAR(MAX) NULL,
+                                torpaqarea NVARCHAR(MAX) NULL,
+                                amount NVARCHAR(35) NULL,
+                                currency NVARCHAR(15) NULL,
+                                renovation NVARCHAR(15) NULL,
+                                [document] NVARCHAR(15) NULL,
+                                ipoteka NVARCHAR(15) NULL,
+                                binatype NVARCHAR(60) NULL,
+                                room NVARCHAR(MAX) NULL,
+                                floor NVARCHAR(15) NULL,
+                                category NVARCHAR(MAX) NULL,
+                                item_id VARCHAR(255) NULL,
+                                poster_name NVARCHAR(200) NULL,
+                                poster_note NVARCHAR(MAX) NULL,
+                                post_tip NVARCHAR(MAX) NULL,
+                                poster_type NVARCHAR(MAX) NULL,
+                                poster_phone VARCHAR(255) NULL,
+                                post_create_date VARCHAR(255) NULL,
+                                insertdate DATETIME NULL DEFAULT GETDATE(),
+                                updated DATETIME NULL DEFAULT GETDATE(),
+                                sayt NVARCHAR(30) NULL,
+                                sayt_link NVARCHAR(MAX) NULL,
+                                status INT NULL,
+                            );
+                        END
                 ");
-                connection.Close();
             }
         }
 

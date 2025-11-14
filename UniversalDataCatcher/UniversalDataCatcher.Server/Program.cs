@@ -11,6 +11,7 @@ namespace UniversalDataCatcher.Server
             Console.OutputEncoding = Encoding.UTF8;
             var builder = WebApplication.CreateBuilder(args);
 
+
             // MSSql Server-də database və table-ləri yaradır.
             MSSqlDatabaseService.Initialize(builder.Configuration);
 

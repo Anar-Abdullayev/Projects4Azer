@@ -9,7 +9,6 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
 
         public static async Task<string?> GetPage(int page)
         {
-
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");

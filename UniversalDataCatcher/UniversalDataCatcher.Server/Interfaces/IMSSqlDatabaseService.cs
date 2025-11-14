@@ -3,6 +3,6 @@
     public interface IMSSqlDatabaseService<T> where T : class
     {
         void InsertRecord(T record);
-        T? FindById(string id);
+        T? FindById(int id);
     }
 }

@@ -11,7 +11,6 @@ namespace UniversalDataCatcher.Server.Controllers.Arenda
         [HttpPost("start")]
         public ActionResult StartService([FromBody] StartBotRequestDto requestDto)
         {
-
             if (ArendaService.IsRunning)
                 return BadRequest("Service is already running.");
             if (requestDto.RepeatEveryMinutes is null)

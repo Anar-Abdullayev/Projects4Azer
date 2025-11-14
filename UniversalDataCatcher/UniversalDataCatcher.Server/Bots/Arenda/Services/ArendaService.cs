@@ -31,8 +31,8 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                         DateTime targetDate = DateTime.Now.AddDays(-dayDifference);
                         var tillDateString = FormatHelper.FormatAzeriDate(targetDate);
                         var formattedDates = FormatHelper.GetFormattedDatesUntil(targetDate);
-                        Console.WriteLine($"Təsdiqlənmiş gün: {dayDifference} gün öncəyədək ({tillDateString} daxil deyil).");
-                        Console.WriteLine($"Başlayır...");
+                        Console.WriteLine($"(ARENDAAZ): Təsdiqlənmiş gün: {dayDifference} gün öncəyədək ({tillDateString} daxil deyil).");
+                        Console.WriteLine($"(ARENDAAZ): Başlayır...");
                         while (!_cts.Token.IsCancellationRequested && continueSearch)
                         {
                             var htmlContent = await ArendaHelper.GetPage(page);
@@ -47,7 +47,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                     {
                                         _cts.Token.ThrowIfCancellationRequested();
                                         Console.Write($"{row++}/{page} - ");
-                                        var existingRecord = databaseService.FindById(propertyNode.Item1);
+                                        var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1.Replace("elan_","")));
                                         if (existingRecord != null)
                                         {
                                             Console.WriteLine($"ID-si {propertyNode.Item1} olan elan oxunulub. Ötürülür...");
@@ -59,18 +59,20 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                             continue;
                                         var property = ArendaHelper.GetPropertyFromRawHTML(detailHtml);
                                         property.Id = propertyNode.Item1;
+                                        property.Link = propertyNode.Item2;
+                                        property.Created_At = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
                                         databaseService.InsertRecord(property);
                                         Console.WriteLine("--------------------------------");
                                         Console.WriteLine($"Yeni elan tapıldı");
                                         Console.WriteLine($"Elanın linki: {propertyNode.Item2}");
                                         Console.WriteLine($"Elanın tarixi: {propertyNode.Item3}");
                                         Console.WriteLine("--------------------------------");
-                                        await Task.Delay(TimeSpan.FromSeconds(2), _cts.Token);
+                                        await Task.Delay(TimeSpan.FromSeconds(1), _cts.Token);
                                     }
                                 }
                             }
                             page++;
-                            await Task.Delay(TimeSpan.FromSeconds(1), _cts.Token);
+                            await Task.Delay(TimeSpan.FromSeconds(0.5), _cts.Token);
                         }
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
@@ -79,6 +81,10 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 catch (OperationCanceledException)
                 {
                     Console.WriteLine("ERROR: Arenda Bot Service has been cancelled!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"ERROR: An unexpected error occurred in Arenda Bot Service: {ex.Message}");
                 }
                 finally
                 {
