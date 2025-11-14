@@ -32,15 +32,22 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                         var page = 1;
                         while (!_cts.IsCancellationRequested && continueSearch)
                         {
+                            var itemPosition = 0;
                             var items = await LalafoHelper.FetchApiPageAsync(cookies, page++);
                             var outDateCount = 0;
                             foreach (var item in items)
                             {
+                                Console.WriteLine($"--------------{++itemPosition}/{page}--------------");
+                                if (databaseService.FindById(item.Id) != null)
+                                {
+                                    Console.WriteLine($"Id ({item.Id}) bazada tapıldı. Növbətinə keçid edilir.");
+                                }    
                                 var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
                                 var createdDate = DateTimeOffset.FromUnixTimeSeconds(propertyDetails.CreatedTime);
                                 if (createdDate < targetDate)
                                     outDateCount++;
                                 propertyDetails.PrintDetails();
+                                databaseService.InsertRecord(item);
                                 _progress++;
                                 await Task.Delay(1000, _cts.Token);
                                 _cts.Token.ThrowIfCancellationRequested();

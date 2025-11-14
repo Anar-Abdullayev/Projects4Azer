@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Caching.Memory;
 using UniversalDataCatcher.Server.Services.Arenda.Model;
 
 namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
@@ -83,12 +84,13 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             ArendaProperty property = new ArendaProperty();
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(html);
+            var titleSideNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'elan_title_bg')]//div[contains(@class,'elan_title_left')]");
             var leftSideNode = doc.DocumentNode.SelectSingleNode("//section[contains(@class,'elan_desc_sides') and contains(@class,'elan_desc_left_side')]");
             var rightSideNode = doc.DocumentNode.SelectSingleNode("//section[contains(@class,'elan_desc_sides') and contains(@class,'elan_desc_right_side') and contains (@class,'elan_in_right')]");
 
 
             // Left side
-            var mainTitle = DocumentHelper.GetMainTitle(leftSideNode);
+            var mainTitle = DocumentHelper.GetMainTitle(titleSideNode);
             var secondaryTitle = DocumentHelper.GetSecondaryTitle(leftSideNode);
             var propertyMainInfos = DocumentHelper.GetMainPropertyInfos(leftSideNode);
             var roomInfo = propertyMainInfos?.FirstOrDefault(info => info.ToLower().Contains("otaq"));
@@ -99,6 +101,12 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             var propertyFeatures = DocumentHelper.GetPropertyFeatures(leftSideNode);
             var address = DocumentHelper.GetAddress(leftSideNode);
 
+
+            // Right side
+            var price = DocumentHelper.GetPrice(rightSideNode);
+            var owner = DocumentHelper.GetOwner(rightSideNode);
+            var contactNumbers = DocumentHelper.GetContactNumbers(rightSideNode);
+
             property.MainTitle = mainTitle;
             property.SecondaryTitle = secondaryTitle;
             property.PropertyMainInfos = propertyMainInfos;
@@ -107,15 +115,31 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             property.Description = description;
             property.PropertyFeatures = propertyFeatures;
             property.Address = address;
-
-            // Right side
-            var price = DocumentHelper.GetPrice(rightSideNode);
-            var owner = DocumentHelper.GetOwner(rightSideNode);
-            var contactNumbers = DocumentHelper.GetContactNumbers(rightSideNode);
-
+            property.Poster_Type = owner.Contains("Əmlak sahibi") ? "mülkiyyətçi" : "vasitəçi";
             property.Price = price;
-            property.Owner = owner;
-            property.ContactNumbers = contactNumbers;
+            property.Owner = owner.Replace(" (Əmlak sahibi)", "").Replace(" (Vasitəçi)","");
+            property.ContactNumbers = contactNumbers is not null && contactNumbers.Count > 0 ? String.Join(", ", contactNumbers.ToArray()) : "Yoxdur";
+            property.ContactNumbers = property.ContactNumbers.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "");
+
+            var floorString = property.PropertyMainInfos?.FirstOrDefault(x => x.ToLower().Contains("mərtəbə"));
+            if (!string.IsNullOrEmpty(floorString))
+                property.Floor = floorString.Split('/')[0].Replace(" ","").Replace("mərtəbəli", "");
+
+            var torpaqString = property.PropertyMainInfos?.FirstOrDefault(y => y.ToLower().Contains("sot"));
+            if (torpaqString != null)
+                property.TorpaqArea = torpaqString.Replace(" sot", "");
+
+            var documentString = property.PropertyMainInfos?.FirstOrDefault(y => y.ToLower().Contains("çıxarış"));
+            if (documentString != null)
+                property.Document = "var";
+
+            var repairString = property.PropertyFeatures?.FirstOrDefault(y => y.ToLower().Contains("təmirli"));
+            if (repairString != null)
+                property.Repair = "var";
+
+
+            property.Post_Type = property.MainTitle.StartsWith("Satılır") ? "Satış" : property.MainTitle.StartsWith("Kirayə") ? "Kirayə" : "Bilinmir";
+
             return property;
         }
 

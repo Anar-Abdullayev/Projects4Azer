@@ -22,9 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\universaldatacatcher.client\universaldatacatcher.client.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ProjectReference Include="..\universaldatacatcher.client\universaldatacatcher.client.esproj" />
   </ItemGroup>
 
 </Project>

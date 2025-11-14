@@ -7,7 +7,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
     {
         public static string GetMainTitle(HtmlNode node)
         {
-            var titleNode = node.SelectSingleNode(".//h2[contains(@class,'elan_in_title_link') and contains(@class,'elan_main_title')]");
+            var titleNode = node.SelectSingleNode(".//h1[contains(@class,'elan_title')]");
             if (titleNode != null)
                 return HtmlEntity.DeEntitize(titleNode.InnerText.Trim());
             return "";
@@ -15,7 +15,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
 
         public static string GetSecondaryTitle(HtmlNode node)
         {
-            var titleNode = node.SelectSingleNode(".//h3[contains(@class,'elan_in_title_link')]");
+            var titleNode = node.SelectSingleNode(".//h2[contains(@class,'elan_in_title_link')]");
             if (titleNode != null)
                 return HtmlEntity.DeEntitize(titleNode.InnerText.Trim());
             return "";
@@ -34,6 +34,8 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
         public static string GetDescription(HtmlNode node)
         {
             var descNode = node.SelectSingleNode(".//div[contains(@class,'full') and contains(@class,'elan_info_txt')]/p");
+            if (descNode == null)
+                descNode = node.SelectSingleNode(".//div[contains(@class,'full') and contains(@class,'elan_info_txt')]");
             if (descNode != null)
                 return HtmlEntity.DeEntitize(descNode.InnerText.Trim());
             return "";

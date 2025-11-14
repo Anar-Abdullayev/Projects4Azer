@@ -34,12 +34,13 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
             string sqlQuery = @$"
                 INSERT INTO dbo.{_tableName} (
                     bina_id, main_title, address, poster_note,
-                    amount, area, room, poster_phone, poster_name, sayt, item_id, post_create_date, sayt_link
+                    amount, area, room, poster_phone, poster_name, sayt, item_id, post_create_date, sayt_link,
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
                 )
                 VALUES (
                     @ElanId, @MainTitle, @Address, @Description,
                     @Price, @PropertySize, @RoomCount, @ContactNumbers, @Owner,
-                    'ArendaAz', @Id, @Created_At, @Link
+                    'ArendaAz', @Id, @Created_At, @Link, @SecondaryTitle, @SecondaryTitle, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type
                 );";
 
             var elanId = record.Id.Replace("elan_", "");
@@ -54,12 +55,18 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 record.Price,
                 record.PropertySize,
                 record.RoomCount,
-                ContactNumbers = record.ContactNumbers != null ? JsonSerializer.Serialize(record.ContactNumbers) : null,
                 record.Owner,
+                record.Link,
+                record.Floor,
+                record.Post_Type,
+                record.ContactNumbers,
+                record.TorpaqArea,
+                record.Document,
+                record.Repair,
+                record.Poster_Type,
                 PropertyFeatures = record.PropertyFeatures != null ? JsonSerializer.Serialize(record.PropertyFeatures) : null,
                 PropertyMainInfos = record.PropertyMainInfos != null ? JsonSerializer.Serialize(record.PropertyMainInfos) : null,
                 Created_At = record.Created_At.ToString(),
-                record.Link
             };
 
             connection.Execute(sqlQuery, parameters);

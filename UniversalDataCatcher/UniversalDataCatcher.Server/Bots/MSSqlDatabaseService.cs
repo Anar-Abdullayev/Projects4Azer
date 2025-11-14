@@ -67,7 +67,7 @@ namespace UniversalDataCatcher.Server.Services
                                 area NVARCHAR(MAX) NULL,
                                 torpaqarea NVARCHAR(MAX) NULL,
                                 amount NVARCHAR(35) NULL,
-                                currency NVARCHAR(15) NULL,
+                                currency NVARCHAR(15) NULL DEFAULT 'AZN',
                                 renovation NVARCHAR(15) NULL,
                                 [document] NVARCHAR(15) NULL,
                                 ipoteka NVARCHAR(15) NULL,

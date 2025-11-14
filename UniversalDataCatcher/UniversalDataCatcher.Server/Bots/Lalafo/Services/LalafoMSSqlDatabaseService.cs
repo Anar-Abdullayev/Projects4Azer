@@ -21,7 +21,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
         public LalafoProperty? FindById(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            string selectQuery = $"SELECT Id FROM {_tableName} WHERE Id = @Id;";
+            string selectQuery = $"SELECT bina_id FROM {_tableName} WHERE bina_id = @Id;";
             var record = connection.QuerySingleOrDefault<LalafoProperty>(selectQuery, new { Id = id });
             if (record == null)
                 return null;
@@ -30,36 +30,26 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 
         public void InsertRecord(LalafoProperty record)
         {
-            //using var connection = new SqlConnection(_connectionString);
-            //string sqlQuery = @$"
-            //    INSERT INTO dbo.{_tableName} (
-            //        Id, MainTitle, SecondaryTitle, Address, Description,
-            //        Price, PropertySize, RoomCount, ContactNumbers, Owner,
-            //        PropertyFeatures, PropertyMainInfos
-            //    )
-            //    VALUES (
-            //        @Id, @MainTitle, @SecondaryTitle, @Address, @Description,
-            //        @Price, @PropertySize, @RoomCount, @ContactNumbers, @Owner,
-            //        @PropertyFeatures, @PropertyMainInfos
-            //    );";
+            using var connection = new SqlConnection(_connectionString);
+            string sqlQuery = @$"
+                INSERT INTO dbo.{_tableName} (
+                    bina_id, main_title, address, poster_note,
+                    amount, area, room, poster_phone, poster_name, sayt, item_id, post_create_date, sayt_link,
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
+                )
+                VALUES (
+                    @Id, @MainTitle, @Address, @Description,
+                    @Price, @PropertySize, @RoomCount, @ContactNumbers, @Owner,
+                    'ArendaAz', @Id, @Created_At, @Link, @SecondaryTitle, @SecondaryTitle, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type
+                );";
 
-            //var parameters = new
-            //{
-            //    record.Id,
-            //    record.MainTitle,
-            //    record.SecondaryTitle,
-            //    record.Address,
-            //    record.Description,
-            //    record.Price,
-            //    record.PropertySize,
-            //    record.RoomCount,
-            //    ContactNumbers = record.ContactNumbers != null ? JsonSerializer.Serialize(record.ContactNumbers) : null,
-            //    record.Owner,
-            //    PropertyFeatures = record.PropertyFeatures != null ? JsonSerializer.Serialize(record.PropertyFeatures) : null,
-            //    PropertyMainInfos = record.PropertyMainInfos != null ? JsonSerializer.Serialize(record.PropertyMainInfos) : null
-            //};
+            var parameters = new
+            {
+                record.Id,
+                record.Title,
+            };
 
-            //connection.Execute(sqlQuery, parameters);
+            connection.Execute(sqlQuery, parameters);
         }
     }
 }
