@@ -86,13 +86,10 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Helpers
             request.Headers.Add("user-hash", cookies.GetValueOrDefault("event_user_hash", ""));
             request.Headers.Add("country-id", "13");
             request.Headers.Add("language", "az_AZ");
-
             foreach (var kv in cookies)
                 request.Headers.Add("Cookie", $"{kv.Key}={kv.Value}");
-
             var response = await _httpClient.SendAsync(request);
-            if (!response.IsSuccessStatusCode) return null;
-
+            if (!response.IsSuccessStatusCode) throw new Exception("Response code returned negative");
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<LalafoProperty>(json)!;
         }

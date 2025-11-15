@@ -41,20 +41,27 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                                 if (databaseService.FindById(item.Id) != null)
                                 {
                                     Console.WriteLine($"Id ({item.Id}) bazada tapıldı. Növbətinə keçid edilir.");
-                                }    
-                                var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
-                                var createdDate = DateTimeOffset.FromUnixTimeSeconds(propertyDetails.CreatedTime);
+                                    continue;
+                                }
+                                var createdDate = DateTimeOffset.FromUnixTimeSeconds(item.CreatedTime);
                                 if (createdDate < targetDate)
+                                {
+                                    Console.WriteLine($"Id ({item.Id}) {targetDate.ToString()} tarixindən köhnədir. Növbətinə keçid edilir.");
                                     outDateCount++;
+                                    continue;
+                                }
+                                var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
+                                propertyDetails.Ad_Label = item.Ad_Label;
+                                
                                 propertyDetails.PrintDetails();
-                                databaseService.InsertRecord(item);
+                                databaseService.InsertRecord(propertyDetails);
                                 _progress++;
                                 await Task.Delay(1000, _cts.Token);
                                 _cts.Token.ThrowIfCancellationRequested();
                             }
                             if (outDateCount == items.Count)
                             {
-                                Console.WriteLine("(LALAFOAZ): Items reached to limit date. Breaking the loop. Waiting for the next part");
+                                Console.WriteLine($"(LALAFOAZ): Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                                 break;
                             }
                         }

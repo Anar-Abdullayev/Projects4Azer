@@ -16,7 +16,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
         public LalafoMSSqlDatabaseService()
         {
             _connectionString = MSSqlDatabaseService.GetConnectionString();
-            _tableName = MSSqlDatabaseService.GetTableName("ArendaAz");
+            _tableName = MSSqlDatabaseService.GetTableName("LalafoAz");
         }
         public LalafoProperty? FindById(int id)
         {
@@ -33,20 +33,36 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
             using var connection = new SqlConnection(_connectionString);
             string sqlQuery = @$"
                 INSERT INTO dbo.{_tableName} (
-                    bina_id, main_title, address, poster_note,
-                    amount, area, room, poster_phone, poster_name, sayt, item_id, post_create_date, sayt_link,
+                    bina_id, main_title, address, poster_note, amount, area, room, poster_phone, poster_name, sayt, 
+                    item_id, post_create_date, sayt_link,
                     binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
                 )
                 VALUES (
-                    @Id, @MainTitle, @Address, @Description,
-                    @Price, @PropertySize, @RoomCount, @ContactNumbers, @Owner,
-                    'ArendaAz', @Id, @Created_At, @Link, @SecondaryTitle, @SecondaryTitle, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type
+                    @Id, @Title, @Address, @Description, @Price, @PropertyArea, @RoomCount, @Mobile, @Username, 'LalafoAz', 
+                    @Id, @CreatedTime, @Url, @BuildingType, @BuildingType, @Floor, @Post_Type, @LandArea, @Document, @Repair, @Poster_Type
                 );";
 
+            
             var parameters = new
             {
                 record.Id,
                 record.Title,
+                record.Address,
+                record.Description,
+                record.Price,
+                record.PropertyArea,
+                record.RoomCount,
+                record.Mobile,
+                record.Username,
+                record.Url,
+                record.BuildingType,
+                record.Floor,
+                record.Post_Type,
+                record.LandArea,
+                record.Document,
+                record.Repair,
+                record.Poster_Type,
+                CreatedTime = DateTimeOffset.FromUnixTimeSeconds(record.CreatedTime).ToString(),
             };
 
             connection.Execute(sqlQuery, parameters);
