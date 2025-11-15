@@ -1,4 +1,5 @@
 ﻿using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
+using UniversalDataCatcher.Server.Helpers;
 
 namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 {
@@ -20,9 +21,10 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 
             Task.Run(async () =>
             {
+                var consoleHelper = new ConsoleHelper("LALAFO");
+                var databaseService = new LalafoMSSqlDatabaseService();
                 try
                 {
-                    var databaseService = new LalafoMSSqlDatabaseService();
                     while (!_cts.Token.IsCancellationRequested)
                     {
                         bool continueSearch = true;
@@ -30,30 +32,30 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                         var targetDate = new DateTime(limitdate.Year, limitdate.Month, limitdate.Day, 0, 0, 0);
                         var cookies = await LalafoHelper.GetCookiesAsync();
                         var page = 1;
+                        consoleHelper.PrintText($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!_cts.IsCancellationRequested && continueSearch)
                         {
                             var itemPosition = 0;
-                            var items = await LalafoHelper.FetchApiPageAsync(cookies, page++);
+                            var items = await LalafoHelper.FetchApiPageAsync(cookies, page);
                             var outDateCount = 0;
                             foreach (var item in items)
                             {
-                                Console.WriteLine($"--------------{++itemPosition}/{page}--------------");
+                                consoleHelper.PrintProgress(itemPosition++, items.Count, page);
                                 if (databaseService.FindById(item.Id) != null)
                                 {
-                                    Console.WriteLine($"Id ({item.Id}) bazada tapıldı. Növbətinə keçid edilir.");
+                                    consoleHelper.PrintText($"{item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    consoleHelper.PrintText($"{item.Id} - {item.Url}");
                                     continue;
                                 }
                                 var createdDate = DateTimeOffset.FromUnixTimeSeconds(item.CreatedTime);
                                 if (createdDate < targetDate)
                                 {
-                                    Console.WriteLine($"Id ({item.Id}) {targetDate.ToString()} tarixindən köhnədir. Növbətinə keçid edilir.");
+                                    consoleHelper.PrintText($"Id ({item.Id}) {targetDate.ToString()} tarixindən köhnədir. Növbətinə keçid edilir.");
                                     outDateCount++;
                                     continue;
                                 }
                                 var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
                                 propertyDetails.Ad_Label = item.Ad_Label;
-                                
-                                propertyDetails.PrintDetails();
                                 databaseService.InsertRecord(propertyDetails);
                                 _progress++;
                                 await Task.Delay(1000, _cts.Token);
@@ -61,28 +63,28 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             }
                             if (outDateCount == items.Count)
                             {
-                                Console.WriteLine($"(LALAFOAZ): Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
+                                consoleHelper.PrintText($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                                 break;
                             }
+                            page++;
                         }
-                        await Task.Delay(repeatEvery * 1000, _cts.Token);
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.WriteLine("(LALAFOAZ): ABORT: Lalafo Service has been cancelled");
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    consoleHelper.PrintText("Servis dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    consoleHelper.PrintText(ex.ToString());
                 }
                 finally
                 {
-                    Console.WriteLine("(LALAFOAZ): Lalafo Service has been stopped");
+                    _isRunning = false;
+                    _progress = 0;
+                    _cts.Dispose();
                 }
             });
         }

@@ -21,11 +21,11 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
         public ArendaProperty? FindById(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            string selectQuery = $"SELECT bina_id FROM {_tableName} WHERE bina_id = @Id AND sayt = 'ArendaAz';";
+            string selectQuery = $"SELECT bina_id, sayt_link FROM {_tableName} WHERE bina_id = @Id AND sayt = 'ArendaAz';";
             var record = connection.QuerySingleOrDefault<ArendaRecord>(selectQuery, new { Id = id});
             if (record == null)
                 return null;
-            return new ArendaProperty { Id = record.bina_id };
+            return new ArendaProperty { Id = record.bina_id, Link = record.sayt_link };
         }
 
         public void InsertRecord(ArendaProperty record)

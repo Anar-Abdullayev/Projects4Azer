@@ -1,11 +1,11 @@
-﻿using BinaAzDataCatcher.Models;
-using System;
+﻿using Microsoft.VisualBasic;
 using System.Net;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
+using UniversalDataCatcher.Server.Bots.Bina.Constants;
+using UniversalDataCatcher.Server.Bots.Bina.Extentions;
+using UniversalDataCatcher.Server.Bots.Bina.Models;
 
-namespace BinaAzDataCatcher.Helpers
+namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
 {
     public class BinaAzHelper
     {

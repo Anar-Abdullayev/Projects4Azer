@@ -27,5 +27,15 @@ namespace UniversalDataCatcher.Server.Controllers.Arenda
             ArendaService.Stop();
             return Ok("Arenda Service Stopped");
         }
+
+        [HttpGet("status")]
+        public async Task<ActionResult> GetStatus()
+        {
+            var response = new {
+                ArendaService.Progress,
+                ArendaService.IsRunning
+            };
+            return Ok(response);
+        }
     }
 }

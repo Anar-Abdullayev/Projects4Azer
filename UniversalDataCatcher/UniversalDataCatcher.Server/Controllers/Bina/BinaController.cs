@@ -1,33 +1,33 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
+using UniversalDataCatcher.Server.Bots.Bina.Services;
 using UniversalDataCatcher.Server.Bots.Lalafo.Services;
-using UniversalDataCatcher.Server.Services.Arenda.Services;
 
-namespace UniversalDataCatcher.Server.Controllers.Lalafo
+namespace UniversalDataCatcher.Server.Controllers.Bina
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LalafoController : ControllerBase
+    public class BinaController : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (LalafoService.IsRunning)
+            if (BinaService.IsRunning)
                 return BadRequest("Service is already running.");
 
-            LalafoService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            BinaService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
-            return Ok("Lalafo Service Started");
+            return Ok("Bina Service Started");
         }
 
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!LalafoService.IsRunning)
+            if (!BinaService.IsRunning)
                 return BadRequest("Service is not running.");
-            LalafoService.Stop();
-            return Ok("Lalafo Service Stopped");
+            BinaService.Stop();
+            return Ok("Bina Service Stopped");
         }
 
 
@@ -36,8 +36,8 @@ namespace UniversalDataCatcher.Server.Controllers.Lalafo
         {
             var response = new
             {
-                LalafoService.Progress,
-                LalafoService.IsRunning
+                BinaService.Progress,
+                BinaService.IsRunning
             };
             return Ok(response);
         }
