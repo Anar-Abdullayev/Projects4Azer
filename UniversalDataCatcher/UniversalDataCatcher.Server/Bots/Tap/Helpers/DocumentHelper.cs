@@ -1,13 +1,8 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using TapAzDataCatcher;
+using UniversalDataCatcher.Server.Bots.Tap.Models;
 
-namespace DataCatcherBot
+namespace UniversalDataCatcher.Server.Bots.Tap.Helpers
 {
     public static class DocumentHelper
     {
@@ -29,6 +24,8 @@ namespace DataCatcherBot
                     property.AdvType = value;
                 else if (label.StartsWith("Əmlakın növü"))
                     property.PropType = value;
+                else if (label.StartsWith("Sahə, sot"))
+                    property.LandArea = value;
                 else if (label.StartsWith("Sahə"))
                     property.Area = value;
                 else if (label.StartsWith("Kirayə müddəti"))
@@ -97,14 +94,14 @@ namespace DataCatcherBot
                             foreach (var advLink in ownerAdvLinks)
                             {
                                 if (advLink.GetAttributeValue("href", "").Contains("dasinmaz-emlak"))
-                                    houseCount++; 
+                                    houseCount++;
                                 if (houseCount > 2)
                                 {
                                     ownerType = "vasitəçi";
                                     break;
                                 }
                             }
-                            
+
                         }
                     }
                 }

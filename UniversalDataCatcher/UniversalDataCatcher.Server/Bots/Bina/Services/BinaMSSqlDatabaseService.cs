@@ -39,7 +39,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
         public BinaAzProperty? FindById(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            string selectQuery = $"SELECT * FROM dbo.{_tableName} WHERE bina_id = @Id;";
+            string selectQuery = $"SELECT * FROM dbo.{_tableName} WHERE bina_id = @Id AND sayt = 'BinaAz';";
             return connection.QuerySingleOrDefault<BinaAzProperty>(selectQuery, new { Id = id });
         }
     }

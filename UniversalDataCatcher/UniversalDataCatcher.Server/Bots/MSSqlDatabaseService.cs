@@ -29,10 +29,12 @@ namespace UniversalDataCatcher.Server.Services
             var arendaTableName = configuration["GlobalSettings:Tables:ArendaAz"]!;
             var lalafoTableName = configuration["GlobalSettings:Tables:LalafoAz"]!;
             var binaTableName = configuration["GlobalSettings:Tables:BinaAz"]!;
+            var tapTableName = configuration["GlobalSettings:Tables:TapAz"]!;
             EnsureTableCreated(universalTableName);
             EnsureTableCreated(arendaTableName);
             EnsureTableCreated(lalafoTableName);
             EnsureTableCreated(binaTableName);
+            EnsureTableCreated(tapTableName);
         }
         private static void EnsureDatabaseCreated(string _databaseName)
         {

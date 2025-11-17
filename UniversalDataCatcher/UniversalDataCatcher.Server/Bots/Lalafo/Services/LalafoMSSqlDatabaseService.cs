@@ -21,7 +21,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
         public LalafoProperty? FindById(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            string selectQuery = $"SELECT bina_id FROM {_tableName} WHERE bina_id = @Id;";
+            string selectQuery = $"SELECT bina_id FROM {_tableName} WHERE bina_id = @Id AND sayt = 'LalafoAz';";
             var record = connection.QuerySingleOrDefault<LalafoProperty>(selectQuery, new { Id = id });
             if (record == null)
                 return null;
