@@ -37,7 +37,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                         int page = 1;
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
-                        targetDate.AddDays(-dayDifference);
+                        targetDate = targetDate.AddDays(-dayDifference);
                         while (!_cts.IsCancellationRequested)
                         {
                             var htmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenBaseUrl.Replace("XXPAGEXX", page.ToString()));
@@ -45,8 +45,10 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             var dict = EvTenHelper.ParseKeyValueMap(merged);
                             List<string> objects = EvTenHelper.BuildFullObjects(dict);
                             int oldContentCount = 0;
+                            int row = 1;
                             foreach (var objJson in objects)
                             {
+                                consoleHelper.PrintProgress(row++, objects.Count, page);
                                 string cleaned = objJson.Replace("\\", "");
                                 cleaned = Regex.Replace(
                                     cleaned,
@@ -59,10 +61,11 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                     "\"subway_station\":$1"
                                 );
                                 EvTenProperty item = null;
-                                item = JsonSerializer.Deserialize<EvTenProperty>(cleaned);
+                                item = JsonSerializer.Deserialize<EvTenProperty>(cleaned)!;
                                 item.RenewedAt = item.RenewedAt.AddHours(4);
                                 if (item.RenewedAt < targetDate)
                                 {
+                                    consoleHelper.PrintText($"Old content ({item.Id}) found, moving to next content.");
                                     oldContentCount++;
                                     continue;
                                 }
@@ -80,12 +83,19 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 postingJson = EvTenHelper.ReplacePlaceholders(postingJson, dict);
                                 postingJson = EvTenHelper.FixJsonString(postingJson);
                                 var detailedItem = JsonSerializer.Deserialize<EvTenPropertyDetails>(postingJson);
+                                detailedItem.MainTitle = DocumentHelper.GetMainTitle(detailedHtmlString);
+                                if (detailedItem.Description == "$3b")
+                                    detailedItem.Description = DocumentHelper.GetDescriptionFromMergedString(merged);
                                 databaseService.InsertRecord(detailedItem);
                             }
                             if (oldContentCount >= objects.Count)
+                            {
+                                consoleHelper.PrintText("Old content threshold reached, moving to next cycle.");
                                 break;
+                            }
                             page++;
                         }
+                        consoleHelper.PrintText($"Gözləmə rejiminə keçildi... {repeatEvery} dəqiqə sonra yenidən başlayacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
 

@@ -139,6 +139,8 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
                 result = Regex.Replace(result, pattern, match =>
                 {
                     var key = match.Groups[1].Value;
+                    if (key == "$3b")
+                        return key;
                     if (dict.TryGetValue(key, out var value))
                     {
                         replaced = true;
@@ -152,7 +154,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
         }
         public static string FixJsonString(string json)
         {
-            json = json.Replace("\\\"", "\"");
+            json = Regex.Unescape(json);
             json = json.Replace("\"[", "[");
             json = json.Replace("]\"", "]");
             json = json.Replace("\"{", "{");

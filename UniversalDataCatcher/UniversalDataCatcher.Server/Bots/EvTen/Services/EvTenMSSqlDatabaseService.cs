@@ -43,13 +43,13 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 record.Rooms,
                 record.PhoneNumber,
                 record.OwnerName,
-                CreatedAt = record.CreatedAt.ToString(),
-                AdvLink = $"{EvTenConstants.EvTenItemBaseUrl}/{record.Id}",
+                CreatedAt = record.RenewedAt.ToString(),
+                record.AdvLink,
                 record.PropertyType,
                 record.Floor,
                 record.PosterType,
                 record.Renovation,
-                PostType = record.SaleType,
+                record.PostType,
                 record.Document,
                 record.LandArea
             };

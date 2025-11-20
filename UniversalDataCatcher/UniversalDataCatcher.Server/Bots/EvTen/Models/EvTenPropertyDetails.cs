@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using UniversalDataCatcher.Server.Bots.EvTen.StaticConstants;
 
 namespace UniversalDataCatcher.Server.Bots.EvTen.Models
 {
@@ -133,6 +134,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
 
         [JsonPropertyName("sale_type")]
         public string SaleType { get; set; }
+        public string PostType { get { return SaleType == "PURCHASE" ? "Satış" : SaleType == "LEASE" ? "Kirayə" : SaleType; } }
 
         [JsonPropertyName("subway_station")]
         public SubwayStation SubwayStation { get; set; }
@@ -163,6 +165,8 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
 
         [JsonPropertyName("is_editable")]
         public bool IsEditable { get; set; }
+        public string AdvLink { get { return EvTenConstants.EvTenItemBaseUrl + Id; } }
+        public string? MainTitle { get; set; }
     }
 
     public class Image
