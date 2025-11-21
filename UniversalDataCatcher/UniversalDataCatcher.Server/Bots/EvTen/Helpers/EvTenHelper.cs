@@ -54,6 +54,71 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 
             return dict;
         }
+        public static Dictionary<string, string> ParseKeyValueMap2(string merged)
+        {
+            var dict = new Dictionary<string, string>();
+            int i = 0;
+
+            while (i < merged.Length)
+            {
+                // 1. Read key (example: 39:)
+                int colonIndex = merged.IndexOf(':', i);
+                if (colonIndex == -1) break;
+
+                string key = merged.Substring(i, colonIndex - i);
+                key = key.Replace("\\n", "");
+
+                // Move cursor after colon
+                int start = colonIndex + 1;
+
+                // 2. Detect JSON start
+                if (merged[start] != '{' && merged[start] != '[')
+                {
+                    i = start + 1;
+                    continue;
+                }
+
+                char openChar = merged[start];
+                char closeChar = openChar == '{' ? '}' : ']';
+
+                int depth = 0;
+                bool insideString = false;
+
+                int j = start;
+
+                // 3. Walk until full JSON is captured
+                while (j < merged.Length)
+                {
+                    char c = merged[j];
+
+                    if (c == '"' && merged[j - 1] != '\\')
+                    {
+                        insideString = !insideString;
+                    }
+
+                    if (!insideString)
+                    {
+                        if (c == openChar) depth++;
+                        else if (c == closeChar) depth--;
+
+                        if (depth == 0)
+                        {
+                            j++; // include the closing bracket
+                            break;
+                        }
+                    }
+
+                    j++;
+                }
+
+                string json = merged.Substring(start, j - start);
+                dict[key] = json;
+
+                i = j; // move to next entry
+            }
+
+            return dict;
+        }
 
         public static string ResolveReferences(string json, Dictionary<string, string> dict)
         {

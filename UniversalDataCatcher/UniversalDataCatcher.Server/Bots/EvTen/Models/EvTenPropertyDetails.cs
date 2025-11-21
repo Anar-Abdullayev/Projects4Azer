@@ -72,6 +72,28 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
 
         [JsonPropertyName("property_type")]
         public string PropertyType { get; set; }
+        public string? Category
+        {
+            get
+            {
+                if (PropertyType == "apartment")
+                {
+                    if (IsNewBuilding)
+                        return "Yeni tikili";
+                    else
+                        return "Köhnə tikili";
+                }
+                if (PropertyType == "office")
+                    return "Ofis";
+                if (PropertyType == "house")
+                    return "Həyət evi";
+                if (PropertyType == "commercial property")
+                    return "Obyekt";
+                if (PropertyType == "land")
+                    return "Torpaq";
+                return null;
+            }
+        }
 
         [JsonPropertyName("is_agent")]
         public bool IsAgent { get; set; }
@@ -82,7 +104,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
 
         [JsonPropertyName("renovated")]
         public bool Renovated { get; set; }
-        public  string Renovation { get { return Renovated ? "təmirli" : "təmirsiz"; } }
+        public string Renovation { get { return Renovated ? "təmirli" : "təmirsiz"; } }
 
         [JsonPropertyName("is_new_building")]
         public bool IsNewBuilding { get; set; }
@@ -167,6 +189,8 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
         public bool IsEditable { get; set; }
         public string AdvLink { get { return EvTenConstants.EvTenItemBaseUrl + Id; } }
         public string? MainTitle { get; set; }
+        public bool HasIpoteka { get; set; }
+        public string? Ipoteka { get { return HasIpoteka ? "var" : null; } }
     }
 
     public class Image

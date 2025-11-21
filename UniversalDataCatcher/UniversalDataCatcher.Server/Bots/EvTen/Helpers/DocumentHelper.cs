@@ -25,5 +25,13 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
             description = description.Substring(8);
             return string.IsNullOrEmpty(description) ? "" : description;
         }
+
+        public static bool HasIpotekaInfo(string htmlContent)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(htmlContent);
+            var ipotekaNode = doc.DocumentNode.SelectSingleNode("//span[text()='İpoteka hesabla']");
+            return ipotekaNode != null;
+        }
     }
 }

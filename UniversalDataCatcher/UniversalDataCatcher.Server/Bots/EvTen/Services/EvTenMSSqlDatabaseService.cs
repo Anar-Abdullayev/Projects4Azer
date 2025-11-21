@@ -26,12 +26,12 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 INSERT INTO dbo.{_databaseTableName} (
                     bina_id, main_title, address, poster_note, amount, area, room, poster_phone, poster_name, sayt, 
                     item_id, post_create_date, sayt_link,
-                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type, ipoteka
                 )
 
                 VALUES (
-                    @Id, null, @Address, @Description, @Price, @Area, @Rooms, @PhoneNumber, @OwnerName, 'Ev10',
-                    @Id, @CreatedAt, @AdvLink, @PropertyType, null, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType
+                    @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PhoneNumber, @OwnerName, 'Ev10',
+                    @Id, @CreatedAt, @AdvLink, @PropertyType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType, @Ipoteka
                 );";
             var parameters = new
             {
@@ -51,7 +51,10 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 record.Renovation,
                 record.PostType,
                 record.Document,
-                record.LandArea
+                record.LandArea,
+                record.Category,
+                record.MainTitle,
+                record.Ipoteka
             };
             connection.Execute(sqlQuery, parameters);
         }

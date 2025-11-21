@@ -10,7 +10,6 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 {
     public class EvTenService
     {
-        private ConsoleHelper consoleHelper = new ConsoleHelper("EV10"); 
         private CancellationTokenSource _cts;
         private bool _isRunning = false;
         private int _progress = 0;
@@ -44,6 +43,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                         targetDate = targetDate.AddDays(-dayDifference);
                         while (!_cts.IsCancellationRequested)
                         {
+                            logger.Information(page.ToString());
                             var htmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenBaseUrl.Replace("XXPAGEXX", page.ToString()));
                             string merged = EvTenHelper.ExtractNextFData(htmlString);
                             var dict = EvTenHelper.ParseKeyValueMap(merged);
@@ -52,8 +52,13 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             int row = 1;
                             foreach (var objJson in objects)
                             {
-                                consoleHelper.PrintProgress(row++, objects.Count, page);
-                                string cleaned = objJson.Replace("\\", "");
+                                string cleaned = Regex.Unescape(objJson);
+
+                                // Optional: trim surrounding quotes if objJson came quoted
+                                if (cleaned.StartsWith("\"") && cleaned.EndsWith("\""))
+                                {
+                                    cleaned = cleaned.Substring(1, cleaned.Length - 2);
+                                }
                                 cleaned = Regex.Replace(
                                     cleaned,
                                     "\"images\":\"(\\[.*?\\])\"",
@@ -67,23 +72,22 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 EvTenProperty item = null;
                                 item = JsonSerializer.Deserialize<EvTenProperty>(cleaned)!;
                                 item.RenewedAt = item.RenewedAt.AddHours(4);
+                             
                                 if (item.RenewedAt < targetDate)
                                 {
-                                    consoleHelper.PrintText($"Old content ({item.Id}) found, moving to next content.");
                                     logger.Information($"Old content ({item.Id}) found, moving to next content");
                                     oldContentCount++;
                                     continue;
                                 }
                                 if (databaseService.FindById(item.Id) is not null)
                                 {
-                                    consoleHelper.PrintText($"Recording with this id ({item.Id}) exists");
                                     logger.Information($"Recording with this id ({item.Id}) exists");
                                     continue;
                                 }
                                 logger.Information($"Starting to process id:({item.Id})");
-                                var detailedHtmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenItemBaseUrl+item.Id);
+                                var detailedHtmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenItemBaseUrl + item.Id);
                                 merged = EvTenHelper.ExtractNextFData(detailedHtmlString);
-                                dict = EvTenHelper.ParseKeyValueMap(merged);
+                                dict = EvTenHelper.ParseKeyValueMap2(merged);
                                 var postingKey = EvTenHelper.ExtractPostingKey(merged);
                                 if (!dict.TryGetValue(postingKey.Replace("$", ""), out string postingJson))
                                     throw new Exception($"{postingKey} not found in dictionary");
@@ -93,18 +97,17 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 detailedItem.MainTitle = DocumentHelper.GetMainTitle(detailedHtmlString);
                                 if (detailedItem.Description == "$3b")
                                     detailedItem.Description = DocumentHelper.GetDescriptionFromMergedString(merged);
+                                detailedItem.HasIpoteka = DocumentHelper.HasIpotekaInfo(detailedHtmlString);
                                 databaseService.InsertRecord(detailedItem);
                                 logger.Information($"Advertisement Id: {detailedItem.Id} has been inserted successfully");
                             }
                             if (oldContentCount >= objects.Count)
                             {
-                                consoleHelper.PrintText("Old content threshold reached, moving to next cycle.");
                                 logger.Information("Old content threshold reached, moving to next cycle.");
                                 break;
                             }
                             page++;
                         }
-                        consoleHelper.PrintText($"Gözləmə rejiminə keçildi... {repeatEvery} dəqiqə sonra yenidən başlayacaq.");
                         logger.Information("Set to waiting");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
@@ -112,11 +115,9 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 }
                 catch (OperationCanceledException)
                 {
-                    consoleHelper.PrintText("Servis dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    consoleHelper.PrintText(ex.ToString());
                     logger.Error(ex.ToString());
                 }
                 finally
