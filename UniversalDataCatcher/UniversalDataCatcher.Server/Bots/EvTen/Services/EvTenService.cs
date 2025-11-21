@@ -1,24 +1,30 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.RegularExpressions;
 using UniversalDataCatcher.Server.Bots.EvTen.Helpers;
 using UniversalDataCatcher.Server.Bots.EvTen.Models;
 using UniversalDataCatcher.Server.Bots.EvTen.StaticConstants;
-using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
-using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 using UniversalDataCatcher.Server.Helpers;
+using Serilog;
 
 namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 {
-    public static class EvTenService
+    public class EvTenService
     {
-        private static CancellationTokenSource _cts;
-        private static bool _isRunning = false;
-        private static int _progress = 0;
-        public static bool IsRunning => _isRunning;
-        public static int Progress => _progress;
+        private ConsoleHelper consoleHelper = new ConsoleHelper("EV10"); 
+        private CancellationTokenSource _cts;
+        private bool _isRunning = false;
+        private int _progress = 0;
+        public bool IsRunning => _isRunning;
+        public int Progress => _progress;
+        private EvTenMSSqlDatabaseService databaseService;
+        private Serilog.ILogger logger;
+        public EvTenService(EvTenMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        {
+            databaseService = _databaseService;
+            logger = _logger.ForContext("ServiceName", nameof(EvTenService));
+        }
 
-        public static void Start(int dayDifference, int repeatEvery)
+        public void Start(int dayDifference, int repeatEvery)
         {
             if (_isRunning)
                 return;
@@ -28,8 +34,6 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 
             Task.Run(async () =>
             {
-                var consoleHelper = new ConsoleHelper("EV10");
-                var databaseService = new EvTenMSSqlDatabaseService();
                 try
                 {
                     while (!_cts.Token.IsCancellationRequested)
@@ -66,14 +70,17 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 if (item.RenewedAt < targetDate)
                                 {
                                     consoleHelper.PrintText($"Old content ({item.Id}) found, moving to next content.");
+                                    logger.Information($"Old content ({item.Id}) found, moving to next content");
                                     oldContentCount++;
                                     continue;
                                 }
                                 if (databaseService.FindById(item.Id) is not null)
                                 {
                                     consoleHelper.PrintText($"Recording with this id ({item.Id}) exists");
+                                    logger.Information($"Recording with this id ({item.Id}) exists");
                                     continue;
                                 }
+                                logger.Information($"Starting to process id:({item.Id})");
                                 var detailedHtmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenItemBaseUrl+item.Id);
                                 merged = EvTenHelper.ExtractNextFData(detailedHtmlString);
                                 dict = EvTenHelper.ParseKeyValueMap(merged);
@@ -87,15 +94,18 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 if (detailedItem.Description == "$3b")
                                     detailedItem.Description = DocumentHelper.GetDescriptionFromMergedString(merged);
                                 databaseService.InsertRecord(detailedItem);
+                                logger.Information($"Advertisement Id: {detailedItem.Id} has been inserted successfully");
                             }
                             if (oldContentCount >= objects.Count)
                             {
                                 consoleHelper.PrintText("Old content threshold reached, moving to next cycle.");
+                                logger.Information("Old content threshold reached, moving to next cycle.");
                                 break;
                             }
                             page++;
                         }
                         consoleHelper.PrintText($"Gözləmə rejiminə keçildi... {repeatEvery} dəqiqə sonra yenidən başlayacaq.");
+                        logger.Information("Set to waiting");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
 
@@ -107,6 +117,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 catch (Exception ex)
                 {
                     consoleHelper.PrintText(ex.ToString());
+                    logger.Error(ex.ToString());
                 }
                 finally
                 {
@@ -117,7 +128,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
             });
         }
 
-        public static void Stop()
+        public void Stop()
         {
             if (!_isRunning)
                 return;

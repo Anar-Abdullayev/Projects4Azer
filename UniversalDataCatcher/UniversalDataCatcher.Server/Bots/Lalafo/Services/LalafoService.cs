@@ -3,15 +3,15 @@ using UniversalDataCatcher.Server.Helpers;
 
 namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 {
-    public static class LalafoService
+    public class LalafoService(LalafoMSSqlDatabaseService databaseService)
     {
-        private static CancellationTokenSource _cts;
-        private static bool _isRunning = false;
-        private static int _progress = 0;
-        public static bool IsRunning => _isRunning;
-        public static int Progress => _progress;
+        private CancellationTokenSource _cts;
+        private bool _isRunning = false;
+        private int _progress = 0;
+        public bool IsRunning => _isRunning;
+        public int Progress => _progress;
 
-        public static void Start(int dayDifference, int repeatEvery)
+        public void Start(int dayDifference, int repeatEvery)
         {
             if (_isRunning)
                 return;
@@ -22,7 +22,6 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
             Task.Run(async () =>
             {
                 var consoleHelper = new ConsoleHelper("LALAFO");
-                var databaseService = new LalafoMSSqlDatabaseService();
                 try
                 {
                     while (!_cts.Token.IsCancellationRequested)
@@ -89,7 +88,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
             });
         }
 
-        public static void Stop()
+        public void Stop()
         {
             if (!_isRunning)
                 return;

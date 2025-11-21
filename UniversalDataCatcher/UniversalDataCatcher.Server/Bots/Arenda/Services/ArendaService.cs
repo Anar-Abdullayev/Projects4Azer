@@ -3,15 +3,15 @@ using UniversalDataCatcher.Server.Services.Arenda.Helpers;
 
 namespace UniversalDataCatcher.Server.Services.Arenda.Services
 {
-    public static class ArendaService
+    public class ArendaService(ArendaMSSqlDatabaseService databaseService)
     {
-        private static CancellationTokenSource _cts;
-        private static bool _isRunning = false;
-        private static int _progress = 0;
-        public static bool IsRunning => _isRunning;
-        public static int Progress => _progress;
+        private CancellationTokenSource _cts;
+        private bool _isRunning = false;
+        private int _progress = 0;
+        public bool IsRunning => _isRunning;
+        public int Progress => _progress;
 
-        public static void Start(int dayDifference, int repeatEvery)
+        public void Start(int dayDifference, int repeatEvery)
         {
             if (_isRunning)
                 return;
@@ -23,7 +23,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
             Task.Run(async () =>
             {
                 var consoleHelper = new ConsoleHelper("ARENDA");
-                var databaseService = new ArendaMSSqlDatabaseService();
+                databaseService = new ArendaMSSqlDatabaseService();
                 try
                 {
                     while (!_cts.Token.IsCancellationRequested)
@@ -93,7 +93,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
             });
         }
 
-        public static void Stop()
+        public void Stop()
         {
             if (!_isRunning)
                 return;

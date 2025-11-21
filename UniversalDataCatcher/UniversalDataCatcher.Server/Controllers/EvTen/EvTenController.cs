@@ -1,22 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
 using UniversalDataCatcher.Server.Bots.EvTen.Services;
-using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 
 namespace UniversalDataCatcher.Server.Controllers.EvTen
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EvTenController : ControllerBase
+    public class EvTenController(EvTenService evTenService) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (EvTenService.IsRunning)
+            if (evTenService.IsRunning)
                 return BadRequest("Service is already running.");
 
-            EvTenService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            evTenService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
             return Ok("Ev10 Service Started");
         }
@@ -24,9 +22,9 @@ namespace UniversalDataCatcher.Server.Controllers.EvTen
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!EvTenService.IsRunning)
+            if (!evTenService.IsRunning)
                 return BadRequest("Service is not running.");
-            EvTenService.Stop();
+            evTenService.Stop();
             return Ok("Lalafo Service Stopped");
         }
 
@@ -36,8 +34,8 @@ namespace UniversalDataCatcher.Server.Controllers.EvTen
         {
             var response = new
             {
-                EvTenService.Progress,
-                EvTenService.IsRunning
+                evTenService.Progress,
+                evTenService.IsRunning
             };
             return Ok(response);
         }

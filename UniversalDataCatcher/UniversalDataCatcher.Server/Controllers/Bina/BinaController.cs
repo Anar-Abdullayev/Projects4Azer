@@ -8,15 +8,15 @@ namespace UniversalDataCatcher.Server.Controllers.Bina
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BinaController : ControllerBase
+    public class BinaController(BinaService binaService) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (BinaService.IsRunning)
+            if (binaService.IsRunning)
                 return BadRequest("Service is already running.");
 
-            BinaService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            binaService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
             return Ok("Bina Service Started");
         }
@@ -24,9 +24,9 @@ namespace UniversalDataCatcher.Server.Controllers.Bina
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!BinaService.IsRunning)
+            if (!binaService.IsRunning)
                 return BadRequest("Service is not running.");
-            BinaService.Stop();
+            binaService.Stop();
             return Ok("Bina Service Stopped");
         }
 
@@ -36,8 +36,8 @@ namespace UniversalDataCatcher.Server.Controllers.Bina
         {
             var response = new
             {
-                BinaService.Progress,
-                BinaService.IsRunning
+                binaService.Progress,
+                binaService.IsRunning
             };
             return Ok(response);
         }

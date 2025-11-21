@@ -6,25 +6,25 @@ namespace UniversalDataCatcher.Server.Controllers.Arenda
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ArendaController : ControllerBase
+    public class ArendaController(ArendaService arendaService) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult StartService([FromBody] StartBotRequestDto requestDto)
         {
-            if (ArendaService.IsRunning)
+            if (arendaService.IsRunning)
                 return BadRequest("Service is already running.");
             if (requestDto.RepeatEveryMinutes is null)
                 requestDto.RepeatEveryMinutes = 30;
-            ArendaService.Start(requestDto.DayDifference, (int) requestDto.RepeatEveryMinutes);
+            arendaService.Start(requestDto.DayDifference, (int) requestDto.RepeatEveryMinutes);
             return Ok("Arenda Service Started");
         }
 
         [HttpPost("stop")]
         public ActionResult StopService()
         {
-            if (!ArendaService.IsRunning)
+            if (!arendaService.IsRunning)
                 return BadRequest("Service is not running.");
-            ArendaService.Stop();
+            arendaService.Stop();
             return Ok("Arenda Service Stopped");
         }
 
@@ -32,8 +32,8 @@ namespace UniversalDataCatcher.Server.Controllers.Arenda
         public async Task<ActionResult> GetStatus()
         {
             var response = new {
-                ArendaService.Progress,
-                ArendaService.IsRunning
+                arendaService.Progress,
+                arendaService.IsRunning
             };
             return Ok(response);
         }

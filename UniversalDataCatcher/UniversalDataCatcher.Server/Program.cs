@@ -1,6 +1,12 @@
 ﻿
+using Serilog;
 using System.Text;
+using UniversalDataCatcher.Server.Bots.Bina.Services;
+using UniversalDataCatcher.Server.Bots.EvTen.Services;
+using UniversalDataCatcher.Server.Bots.Lalafo.Services;
+using UniversalDataCatcher.Server.Bots.Tap.Services;
 using UniversalDataCatcher.Server.Services;
+using UniversalDataCatcher.Server.Services.Arenda.Services;
 
 namespace UniversalDataCatcher.Server
 {
@@ -11,9 +17,31 @@ namespace UniversalDataCatcher.Server
             Console.OutputEncoding = Encoding.UTF8;
             var builder = WebApplication.CreateBuilder(args);
 
-
-            // MSSql Server-də database və table-ləri yaradır.
             MSSqlDatabaseService.Initialize(builder.Configuration);
+
+            //Log.Logger = new LoggerConfiguration()
+            //    .Enrich.FromLogContext()
+            //    .WriteTo.File("logs/info/info-.log",
+            //    rollingInterval: RollingInterval.Day,
+            //    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+            //    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
+            //    .WriteTo.File("logs/error/error-.log",
+            //    rollingInterval: RollingInterval.Day,
+            //    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
+            //    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
+            //    .WriteTo.Console()
+            //    .CreateLogger();
+            builder.Services.AddSingleton<EvTenService>();
+            builder.Services.AddSingleton<EvTenMSSqlDatabaseService>();
+            builder.Services.AddSingleton<ArendaService>();
+            builder.Services.AddSingleton<ArendaMSSqlDatabaseService>();
+            builder.Services.AddSingleton<BinaService>();
+            builder.Services.AddSingleton<BinaMSSqlDatabaseService>();
+            builder.Services.AddSingleton<LalafoService>();
+            builder.Services.AddSingleton<LalafoMSSqlDatabaseService>();
+            builder.Services.AddSingleton<TapAzService>();
+            builder.Services.AddSingleton<TapazMSSqlDatabaseService>();
+
 
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
@@ -21,6 +49,20 @@ namespace UniversalDataCatcher.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Host.UseSerilog((ctx, lc) =>
+            {
+                lc.Enrich.FromLogContext()
+                .WriteTo.File("logs/info/info-.log",
+                rollingInterval: RollingInterval.Day,
+                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
+                .WriteTo.File("logs/error/error-.log",
+                rollingInterval: RollingInterval.Day,
+                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
+                .WriteTo.Console(
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}");
+            });
             var app = builder.Build();
 
             app.UseDefaultFiles();

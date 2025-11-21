@@ -8,15 +8,15 @@ using UniversalDataCatcher.Server.Services;
 
 namespace UniversalDataCatcher.Server.Bots.Bina.Services
 {
-    public static class BinaService
+    public class BinaService(BinaMSSqlDatabaseService database)
     {
-        private static CancellationTokenSource _cts;
-        private static bool _isRunning = false;
-        private static int _progress = 0;
-        public static bool IsRunning => _isRunning;
-        public static int Progress => _progress;
+        private CancellationTokenSource _cts;
+        private bool _isRunning = false;
+        private int _progress = 0;
+        public bool IsRunning => _isRunning;
+        public int Progress => _progress;
 
-        public static void Start(int dayDifference, int repeatEvery)
+        public void Start(int dayDifference, int repeatEvery)
         {
             if (_isRunning)
                 return;
@@ -27,7 +27,6 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
             Task.Run(async () =>
             {
                 var consoleHelper = new ConsoleHelper("BINA");
-                var database = new BinaMSSqlDatabaseService();
                 var helper = new BinaAzContentHelper();
                 try
                 {
@@ -103,7 +102,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
             });
         }
 
-        public static void Stop()
+        public void Stop()
         {
             if (!_isRunning)
                 return;
