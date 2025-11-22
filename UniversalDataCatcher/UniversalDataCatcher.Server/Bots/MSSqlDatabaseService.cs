@@ -32,6 +32,7 @@ namespace UniversalDataCatcher.Server.Services
             var tapTableName = configuration["GlobalSettings:Tables:TapAz"]!;
             var evtenTableName = configuration["GlobalSettings:Tables:Ev10Az"]!;
             var yeniEmlakTableName = configuration["GlobalSettings:Tables:YeniEmlak"]!;
+            var emlakTableName = configuration["GlobalSettings:Tables:Emlak"]!;
             EnsureTableCreated(universalTableName);
             EnsureTableCreated(arendaTableName);
             EnsureTableCreated(lalafoTableName);
@@ -39,6 +40,7 @@ namespace UniversalDataCatcher.Server.Services
             EnsureTableCreated(tapTableName);
             EnsureTableCreated(evtenTableName);
             EnsureTableCreated(yeniEmlakTableName);
+            EnsureTableCreated(emlakTableName);
         }
         private static void EnsureDatabaseCreated(string _databaseName)
         {

@@ -29,30 +29,29 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                 )
 
                 VALUES (
-                    @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PosterPhone, @PosterName, 'YeniEmlak',
-                    @Id, @CreatedAt, @AdvLink, @BinaType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType
+                    @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PosterPhone, @PosterName, 'Emlak',
+                    @Id, @CreatedAt, @AdvLink, null, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType
                 );";
             var parameters = new
             {
                 record.Id,
-                //record.Address,
-                //record.Description,
-                //record.Price,
-                //record.Area,
-                //record.Rooms,
-                //record.PosterPhone,
-                //record.PosterName,
-                //CreatedAt = record.CreatedAt.ToString(),
-                //record.AdvLink,
-                //record.BinaType,
-                //record.Floor,
-                //record.PosterType,
-                //record.Renovation,
-                //record.PostType,
-                //record.Document,
-                //record.LandArea,
-                //record.Category,
-                //MainTitle = record.PostType + " " + record.Address
+                record.Address,
+                record.Description,
+                record.Price,
+                record.Area,
+                record.Rooms,
+                record.PosterPhone,
+                record.PosterName,
+                CreatedAt = record.CreatedAt.ToString(),
+                record.AdvLink,
+                Floor = record.ApartmentFloor is not null ? record.ApartmentFloor : record.Floor is not null ? record.Floor : null,
+                record.PosterType,
+                record.Renovation,
+                record.PostType,
+                record.Document,
+                record.LandArea,
+                record.Category,
+                record.MainTitle
             };
             connection.Execute(sqlQuery, parameters);
         }

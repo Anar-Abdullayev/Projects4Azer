@@ -28,8 +28,4 @@
     <ProjectReference Include="..\universaldatacatcher.client\universaldatacatcher.client.esproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Bots\Emlak\Helpers\" />
-  </ItemGroup>
-
 </Project>
