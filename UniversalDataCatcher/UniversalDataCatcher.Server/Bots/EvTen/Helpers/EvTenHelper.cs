@@ -7,9 +7,9 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 {
     public static class EvTenHelper
     {
+        private static HttpClient client = new HttpClient();
         public static async Task<string> GetPageAsync(string url)
         {
-            using var client = new HttpClient();
             var response = await client.GetAsync(url);
             return await response.Content.ReadAsStringAsync();
         }

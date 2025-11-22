@@ -31,12 +31,14 @@ namespace UniversalDataCatcher.Server.Services
             var binaTableName = configuration["GlobalSettings:Tables:BinaAz"]!;
             var tapTableName = configuration["GlobalSettings:Tables:TapAz"]!;
             var evtenTableName = configuration["GlobalSettings:Tables:Ev10Az"]!;
+            var yeniEmlakTableName = configuration["GlobalSettings:Tables:YeniEmlak"]!;
             EnsureTableCreated(universalTableName);
             EnsureTableCreated(arendaTableName);
             EnsureTableCreated(lalafoTableName);
             EnsureTableCreated(binaTableName);
             EnsureTableCreated(tapTableName);
             EnsureTableCreated(evtenTableName);
+            EnsureTableCreated(yeniEmlakTableName);
         }
         private static void EnsureDatabaseCreated(string _databaseName)
         {

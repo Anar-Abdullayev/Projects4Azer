@@ -1,6 +1,4 @@
 ﻿using Microsoft.Playwright;
-using Microsoft.VisualBasic;
-using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UniversalDataCatcher.Server.Bots.Lalafo.Models;

@@ -5,6 +5,7 @@ using UniversalDataCatcher.Server.Bots.Bina.Services;
 using UniversalDataCatcher.Server.Bots.EvTen.Services;
 using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 using UniversalDataCatcher.Server.Bots.Tap.Services;
+using UniversalDataCatcher.Server.Bots.YeniEmlak.Services;
 using UniversalDataCatcher.Server.Services;
 using UniversalDataCatcher.Server.Services.Arenda.Services;
 
@@ -41,6 +42,8 @@ namespace UniversalDataCatcher.Server
             builder.Services.AddSingleton<LalafoMSSqlDatabaseService>();
             builder.Services.AddSingleton<TapAzService>();
             builder.Services.AddSingleton<TapazMSSqlDatabaseService>();
+            builder.Services.AddSingleton<YeniEmlakService>();
+            builder.Services.AddSingleton<YeniemlakMSSqlDatabaseService>();
 
 
             builder.Services.AddAuthorization();
