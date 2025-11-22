@@ -3,8 +3,6 @@ using System.Text.RegularExpressions;
 using UniversalDataCatcher.Server.Bots.EvTen.Helpers;
 using UniversalDataCatcher.Server.Bots.EvTen.Models;
 using UniversalDataCatcher.Server.Bots.EvTen.StaticConstants;
-using UniversalDataCatcher.Server.Helpers;
-using Serilog;
 
 namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 {

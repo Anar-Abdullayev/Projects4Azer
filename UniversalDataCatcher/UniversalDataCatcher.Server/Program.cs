@@ -2,6 +2,7 @@
 using Serilog;
 using System.Text;
 using UniversalDataCatcher.Server.Bots.Bina.Services;
+using UniversalDataCatcher.Server.Bots.Emlak.Services;
 using UniversalDataCatcher.Server.Bots.EvTen.Services;
 using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 using UniversalDataCatcher.Server.Bots.Tap.Services;
@@ -20,18 +21,6 @@ namespace UniversalDataCatcher.Server
 
             MSSqlDatabaseService.Initialize(builder.Configuration);
 
-            //Log.Logger = new LoggerConfiguration()
-            //    .Enrich.FromLogContext()
-            //    .WriteTo.File("logs/info/info-.log",
-            //    rollingInterval: RollingInterval.Day,
-            //    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-            //    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
-            //    .WriteTo.File("logs/error/error-.log",
-            //    rollingInterval: RollingInterval.Day,
-            //    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
-            //    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
-            //    .WriteTo.Console()
-            //    .CreateLogger();
             builder.Services.AddSingleton<EvTenService>();
             builder.Services.AddSingleton<EvTenMSSqlDatabaseService>();
             builder.Services.AddSingleton<ArendaService>();
@@ -44,6 +33,8 @@ namespace UniversalDataCatcher.Server
             builder.Services.AddSingleton<TapazMSSqlDatabaseService>();
             builder.Services.AddSingleton<YeniEmlakService>();
             builder.Services.AddSingleton<YeniemlakMSSqlDatabaseService>();
+            builder.Services.AddSingleton<EmlakService>();
+            builder.Services.AddSingleton<EmlakMSSqlDatabaseService>();
 
 
             builder.Services.AddAuthorization();

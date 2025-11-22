@@ -1,20 +1,23 @@
-﻿using System.Text;
-using UniversalDataCatcher.Server.Bots.Bina.Helpers;
+﻿using UniversalDataCatcher.Server.Bots.Bina.Helpers;
 using UniversalDataCatcher.Server.Bots.Bina.Models;
-using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
-using UniversalDataCatcher.Server.Bots.Lalafo.Services;
-using UniversalDataCatcher.Server.Helpers;
-using UniversalDataCatcher.Server.Services;
 
 namespace UniversalDataCatcher.Server.Bots.Bina.Services
 {
-    public class BinaService(BinaMSSqlDatabaseService database)
+    public class BinaService
     {
         private CancellationTokenSource _cts;
         private bool _isRunning = false;
         private int _progress = 0;
         public bool IsRunning => _isRunning;
         public int Progress => _progress;
+        private BinaMSSqlDatabaseService database;
+        private Serilog.ILogger logger;
+
+        public BinaService(BinaMSSqlDatabaseService _database, Serilog.ILogger _logger)
+        {
+            database = _database;
+            logger = _logger.ForContext("ServiceName", nameof(BinaService));
+        }
 
         public void Start(int dayDifference, int repeatEvery)
         {
@@ -26,11 +29,10 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
 
             Task.Run(async () =>
             {
-                var consoleHelper = new ConsoleHelper("BINA");
                 var helper = new BinaAzContentHelper();
                 try
                 {
-                    consoleHelper.PrintText("Servis başladıldı.");
+                    logger.Information("Servis başladıldı.");
                     while (!_cts.IsCancellationRequested)
                     {
                         DateTime endDate = DateTime.Today.AddDays(-dayDifference);
@@ -54,18 +56,18 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
 
                             foreach (var item in dataPage.Data.ItemsConnection.Edges)
                             {
-                                consoleHelper.PrintProgress(currentItem++, dataPage.Data.ItemsConnection.Edges.Count, page);
+                                logger.Information($"{currentItem}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} page) Starting process");
                                 var property = item.Node.GetInitialProperty();
                                 if (property.UpdatedTime < endDate)
                                 {
-                                    consoleHelper.PrintText("Data older than 2 days reached, stopping the process.");
+                                    logger.Information("Data older than 2 days reached, stopping the process.");
                                     continueSearch = false;
                                     break;
                                 }
                                 var existingRecord = database.FindById(property.Id);
                                 if (existingRecord is not null)
                                 {
-                                    consoleHelper.PrintText($"Recording with this id ({property.Id}) exists");
+                                    logger.Information($"Recording with this id ({property.Id}) exists");
                                     continue;
                                 }
                                 var htmlString = await helper.GetPage($"/items/{property.Id}");
@@ -87,11 +89,11 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                 }
                 catch (OperationCanceledException)
                 {
-                    consoleHelper.PrintText("Servis dayandırıldı.");
+                    logger.Information("Servis dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    consoleHelper.PrintText(ex.ToString());
+                    logger.Information(ex.ToString());
                 }
                 finally
                 {

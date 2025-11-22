@@ -1,15 +1,21 @@
-﻿using UniversalDataCatcher.Server.Helpers;
-using UniversalDataCatcher.Server.Services.Arenda.Helpers;
+﻿using UniversalDataCatcher.Server.Services.Arenda.Helpers;
 
 namespace UniversalDataCatcher.Server.Services.Arenda.Services
 {
-    public class ArendaService(ArendaMSSqlDatabaseService databaseService)
+    public class ArendaService
     {
         private CancellationTokenSource _cts;
         private bool _isRunning = false;
         private int _progress = 0;
         public bool IsRunning => _isRunning;
         public int Progress => _progress;
+        private ArendaMSSqlDatabaseService databaseService;
+        private Serilog.ILogger logger;
+        public ArendaService(ArendaMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        {
+            databaseService = _databaseService;
+            logger = _logger.ForContext("ServiceName", nameof(ArendaService));
+        }
 
         public void Start(int dayDifference, int repeatEvery)
         {
@@ -22,7 +28,6 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
 
             Task.Run(async () =>
             {
-                var consoleHelper = new ConsoleHelper("ARENDA");
                 databaseService = new ArendaMSSqlDatabaseService();
                 try
                 {
@@ -33,7 +38,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                         DateTime targetDate = DateTime.Now.AddDays(-dayDifference);
                         var tillDateString = FormatHelper.FormatAzeriDate(targetDate);
                         var formattedDates = FormatHelper.GetFormattedDatesUntil(targetDate);
-                        consoleHelper.PrintText($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
+                        logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!_cts.Token.IsCancellationRequested && continueSearch)
                         {
                             var htmlContent = await ArendaHelper.GetPage(page);
@@ -46,12 +51,12 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                     foreach (var propertyNode in propertyNodes)
                                     {
                                         _cts.Token.ThrowIfCancellationRequested();
-                                        consoleHelper.PrintProgress(row++, propertyNodes.Count, page);
+                                        logger.Information($"{row}/{propertyNodes.Count} ({page} page) Starting process");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1.Replace("elan_", "")));
                                         if (existingRecord != null)
                                         {
-                                            consoleHelper.PrintText($"{existingRecord.Id} bazada tapıldı. Növbəti elana keçid edilir.");
-                                            consoleHelper.PrintText($"{existingRecord.Id} - {propertyNode.Item2}");
+                                            logger.Information($"{existingRecord.Id} bazada tapıldı. Növbəti elana keçid edilir.");
+                                            logger.Information($"{existingRecord.Id} - {propertyNode.Item2}");
                                             continue;
                                         }
 
@@ -71,24 +76,24 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                             page++;
                             await Task.Delay(TimeSpan.FromSeconds(0.5), _cts.Token);
                         }
-                        consoleHelper.PrintText($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
-                    consoleHelper.PrintText("ERROR: Arenda Bot Service has been cancelled!");
+                    logger.Information("ERROR: Arenda Bot Service has been cancelled!");
                 }
                 catch (Exception ex)
                 {
-                    consoleHelper.PrintText($"ERROR: An unexpected error occurred in Arenda Bot Service: {ex.Message}");
+                    logger.Information($"ERROR: An unexpected error occurred in Arenda Bot Service: {ex.Message}");
                 }
                 finally
                 {
                     _isRunning = false;
                     _cts.Dispose();
-                    consoleHelper.PrintText("Servis dayandırıldı.");
+                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }

@@ -1,18 +1,25 @@
 ﻿using HtmlAgilityPack;
-using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
 using UniversalDataCatcher.Server.Bots.Tap.Consts;
 using UniversalDataCatcher.Server.Bots.Tap.Helpers;
-using UniversalDataCatcher.Server.Helpers;
 
 namespace UniversalDataCatcher.Server.Bots.Tap.Services
 {
-    public class TapAzService(TapazMSSqlDatabaseService databaseService)
+    public class TapAzService
     {
         private CancellationTokenSource _cts;
         private bool _isRunning = false;
         private int _progress = 0;
         public bool IsRunning => _isRunning;
         public int Progress => _progress;
+
+        private TapazMSSqlDatabaseService databaseService;
+        private Serilog.ILogger logger;
+
+        public TapAzService(TapazMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        {
+            databaseService = _databaseService;
+            logger = _logger.ForContext("ServiceName", nameof(TapAzService));
+        }
 
         public void Start(int dayDifference, int repeatEvery)
         {
@@ -24,7 +31,6 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
 
             Task.Run(async () =>
             {
-                var consoleHelper = new ConsoleHelper("TAP");
                 var tapazHelper = new TapazHelper();
                 try
                 {
@@ -51,12 +57,12 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                     int row = 1;
                                     foreach (var propertyNode in propertyNodes)
                                     {
-                                        consoleHelper.PrintProgress(row, propertyNodes.Count, page);
+                                        logger.Information($"{row}/{propertyNodes.Count} ({page} page)");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1));
                                         if (existingRecord != null)
                                         {
-                                            consoleHelper.PrintText($"ID-si {propertyNode.Item1} olan elan oxunulub. Ötürülür...");
-                                            consoleHelper.PrintText($"ID-si {propertyNode.Item1} üçün saytın URL-i: {propertyNode.Item2}");
+                                            logger.Information($"ID-si {propertyNode.Item1} olan elan oxunulub. Ötürülür...");
+                                            logger.Information($"ID-si {propertyNode.Item1} üçün saytın URL-i: {propertyNode.Item2}");
                                             continue;
                                         }
                                         var detailHtml = await tapazHelper.GetPage(propertyNode.Item2);
@@ -67,7 +73,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                         property.AdvLink = Constants.BaseUrl + propertyNode.Item2;
                                         property.CreatedAt = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
                                         databaseService.InsertRecord(property);
-                                        consoleHelper.PrintText("Yeni elan tapıldı və məlumat bazasına əlavə edildi:");
+                                        logger.Information("Yeni elan tapıldı və məlumat bazasına əlavə edildi:");
                                         row++;
                                         await Task.Delay(TimeSpan.FromSeconds(0.5), _cts.Token);
                                     }
@@ -76,17 +82,17 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                             page++;
                             await Task.Delay(TimeSpan.FromSeconds(0.5),_cts.Token);
                         }
-                        consoleHelper.PrintText($"Gözləmə rejimində... Növbəti yoxlama {repeatEvery} dəqiqədən sonra baş tutacaq.");
+                        logger.Information($"Gözləmə rejimində... Növbəti yoxlama {repeatEvery} dəqiqədən sonra baş tutacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    consoleHelper.PrintText("Servis dayandırıldı.");
+                    logger.Information("Servis dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    consoleHelper.PrintText(ex.ToString());
+                    logger.Information(ex.ToString());
                 }
                 finally
                 {

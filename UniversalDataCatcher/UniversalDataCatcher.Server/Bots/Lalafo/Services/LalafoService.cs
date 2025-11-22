@@ -1,15 +1,22 @@
 ﻿using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
-using UniversalDataCatcher.Server.Helpers;
 
 namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 {
-    public class LalafoService(LalafoMSSqlDatabaseService databaseService)
+    public class LalafoService
     {
         private CancellationTokenSource _cts;
         private bool _isRunning = false;
         private int _progress = 0;
         public bool IsRunning => _isRunning;
         public int Progress => _progress;
+        private LalafoMSSqlDatabaseService databaseService;
+        private Serilog.ILogger logger;
+
+        public LalafoService(LalafoMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        {
+            databaseService = _databaseService;
+            logger = _logger.ForContext("ServiceName", nameof(LalafoService));
+        }
 
         public void Start(int dayDifference, int repeatEvery)
         {
@@ -21,7 +28,6 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 
             Task.Run(async () =>
             {
-                var consoleHelper = new ConsoleHelper("LALAFO");
                 try
                 {
                     while (!_cts.Token.IsCancellationRequested)
@@ -31,7 +37,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                         var targetDate = new DateTime(limitdate.Year, limitdate.Month, limitdate.Day, 0, 0, 0);
                         var cookies = await LalafoHelper.GetCookiesAsync();
                         var page = 1;
-                        consoleHelper.PrintText($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
+                        logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!_cts.IsCancellationRequested && continueSearch)
                         {
                             var itemPosition = 0;
@@ -39,17 +45,17 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             var outDateCount = 0;
                             foreach (var item in items)
                             {
-                                consoleHelper.PrintProgress(itemPosition++, items.Count, page);
+                                logger.Information($"{itemPosition++}/{items.Count} ({page} page)");
                                 if (databaseService.FindById(item.Id) != null)
                                 {
-                                    consoleHelper.PrintText($"{item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
-                                    consoleHelper.PrintText($"{item.Id} - {item.Url}");
+                                    logger.Information($"{item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    logger.Information($"{item.Id} - {item.Url}");
                                     continue;
                                 }
                                 var createdDate = DateTimeOffset.FromUnixTimeSeconds(item.CreatedTime);
                                 if (createdDate < targetDate)
                                 {
-                                    consoleHelper.PrintText($"Id ({item.Id}) {targetDate.ToString()} tarixindən köhnədir. Növbətinə keçid edilir.");
+                                    logger.Information($"Id ({item.Id}) {targetDate.ToString()} tarixindən köhnədir. Növbətinə keçid edilir.");
                                     outDateCount++;
                                     continue;
                                 }
@@ -62,7 +68,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             }
                             if (outDateCount == items.Count)
                             {
-                                consoleHelper.PrintText($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
+                                logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                                 break;
                             }
                             page++;
@@ -73,11 +79,11 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 }
                 catch (OperationCanceledException)
                 {
-                    consoleHelper.PrintText("Servis dayandırıldı.");
+                    logger.Information("Servis dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    consoleHelper.PrintText(ex.ToString());
+                    logger.Information(ex.ToString());
                 }
                 finally
                 {
