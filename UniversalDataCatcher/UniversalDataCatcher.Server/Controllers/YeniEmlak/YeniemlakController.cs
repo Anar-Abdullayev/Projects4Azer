@@ -6,15 +6,15 @@ namespace UniversalDataCatcher.Server.Controllers.YeniEmlak
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class YeniemlakController(YeniEmlakService yeniEmlakService) : ControllerBase
+    public class YeniemlakController(YeniEmlakService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (yeniEmlakService.IsRunning)
+            if (service.IsRunning)
                 return BadRequest("Service is already running.");
 
-            yeniEmlakService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            service.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
             return Ok("Service Started");
         }
@@ -22,9 +22,9 @@ namespace UniversalDataCatcher.Server.Controllers.YeniEmlak
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!yeniEmlakService.IsRunning)
+            if (!service.IsRunning)
                 return BadRequest("Service is not running.");
-            yeniEmlakService.Stop();
+            service.Stop();
             return Ok("Service Stopped");
         }
 
@@ -34,8 +34,10 @@ namespace UniversalDataCatcher.Server.Controllers.YeniEmlak
         {
             var response = new
             {
-                yeniEmlakService.Progress,
-                yeniEmlakService.IsRunning
+                service.Progress,
+                service.IsRunning,
+                service.SleepTime,
+                service.StartTime
             };
             return Ok(response);
         }

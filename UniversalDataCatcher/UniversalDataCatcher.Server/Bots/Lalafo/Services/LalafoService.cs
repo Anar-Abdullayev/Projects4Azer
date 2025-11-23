@@ -1,44 +1,42 @@
-﻿using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
+﻿using UniversalDataCatcher.Server.Abstracts;
+using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
+using UniversalDataCatcher.Server.Helpers;
 
 namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 {
-    public class LalafoService
+    public class LalafoService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
         private LalafoMSSqlDatabaseService databaseService;
         private Serilog.ILogger logger;
 
-        public LalafoService(LalafoMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        public LalafoService(LalafoMSSqlDatabaseService _databaseService)
         {
             databaseService = _databaseService;
-            logger = _logger.ForContext("ServiceName", nameof(LalafoService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(LalafoService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
                 try
                 {
-                    while (!_cts.Token.IsCancellationRequested)
+                    while (!CancellationTokenSource.Token.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         bool continueSearch = true;
                         var limitdate = DateTime.Now.AddDays(-dayDifference);
                         var targetDate = new DateTime(limitdate.Year, limitdate.Month, limitdate.Day, 0, 0, 0);
                         var cookies = await LalafoHelper.GetCookiesAsync();
                         var page = 1;
                         logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
-                        while (!_cts.IsCancellationRequested && continueSearch)
+                        while (!CancellationTokenSource.IsCancellationRequested && continueSearch)
                         {
                             var itemPosition = 0;
                             var items = await LalafoHelper.FetchApiPageAsync(cookies, page);
@@ -62,9 +60,9 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                                 var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
                                 propertyDetails.Ad_Label = item.Ad_Label;
                                 databaseService.InsertRecord(propertyDetails);
-                                _progress++;
-                                await Task.Delay(1000, _cts.Token);
-                                _cts.Token.ThrowIfCancellationRequested();
+                                Progress++;
+                                await Task.Delay(1000, CancellationTokenSource.Token);
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                             }
                             if (outDateCount == items.Count)
                             {
@@ -73,7 +71,8 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             }
                             page++;
                         }
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
@@ -87,19 +86,21 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
+                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
+            CancellationTokenSource?.Cancel();
         }
     }
 }

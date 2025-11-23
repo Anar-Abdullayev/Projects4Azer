@@ -8,26 +8,26 @@ namespace UniversalDataCatcher.Server.Controllers.Lalafo
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LalafoController(LalafoService lalafoService) : ControllerBase
+    public class LalafoController(LalafoService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (lalafoService.IsRunning)
+            if (service.IsRunning)
                 return BadRequest("Service is already running.");
 
-            lalafoService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            service.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
-            return Ok("Lalafo Service Started");
+            return Ok("Service Started");
         }
 
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!lalafoService.IsRunning)
+            if (!service.IsRunning)
                 return BadRequest("Service is not running.");
-            lalafoService.Stop();
-            return Ok("Lalafo Service Stopped");
+            service.Stop();
+            return Ok("Service Stopped");
         }
 
 
@@ -36,8 +36,10 @@ namespace UniversalDataCatcher.Server.Controllers.Lalafo
         {
             var response = new
             {
-                lalafoService.Progress,
-                lalafoService.IsRunning
+                service.Progress,
+                service.IsRunning,
+                service.SleepTime,
+                service.StartTime
             };
             return Ok(response);
         }

@@ -1,60 +1,60 @@
-﻿using UniversalDataCatcher.Server.Bots.Emlak.Helpers;
+﻿using Serilog;
+using UniversalDataCatcher.Server.Abstracts;
+using UniversalDataCatcher.Server.Bots.Emlak.Helpers;
 using UniversalDataCatcher.Server.Bots.Emlak.StaticConstants;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.Services;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.StaticConstants;
+using UniversalDataCatcher.Server.Helpers;
+using UniversalDataCatcher.Server.Services.Arenda.Services;
 
 namespace UniversalDataCatcher.Server.Bots.Emlak.Services
 {
-    public class EmlakService
+    public class EmlakService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
         private EmlakMSSqlDatabaseService databaseService;
         private Serilog.ILogger logger;
-        public EmlakService(EmlakMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        public EmlakService(EmlakMSSqlDatabaseService _databaseService)
         {
             databaseService = _databaseService;
-            logger = _logger.ForContext("ServiceName", nameof(YeniEmlakService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(EmlakService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
                 try
                 {
-                    while (!_cts.Token.IsCancellationRequested)
+                    while (!CancellationTokenSource.Token.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         int page = 1;
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
                         targetDate = targetDate.AddDays(-dayDifference);
-                        while (!_cts.IsCancellationRequested)
+                        while (!CancellationTokenSource.IsCancellationRequested)
                         {
                             TryAgain:
                             var advItems = await EmlakHelper.GetAdvItemNodes(EmlakConstants.BaseSearchUrl.Replace("XXXPAGEXXX", page.ToString()));
                             if (advItems == null)
                             {
-                                logger.Error("AdvItems is null. Retrying in 3 minutes");
-                                await Task.Delay(TimeSpan.FromMinutes(3), _cts.Token);
+                                logger.Error("AdvItems is null. Retrying in 25 seconds");
+                                await Task.Delay(TimeSpan.FromSeconds(25), CancellationTokenSource.Token);
                                 goto TryAgain;
                             }
                             var row = 1;
                             var oldContentCount = 0;
                             foreach (var item in advItems)
                             {
-                                _cts.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{row}/{advItems.Count} ({page} page) Starting process");
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                                logger.Information($"{row++}/{advItems.Count} ({page} page) Starting process");
                                 var initialInfo = EmlakHelper.GetInitialInfosFromNode(item);
                                 var id = initialInfo.Item1;
                                 var advLink = EmlakConstants.HostUrl+initialInfo.Item2;
@@ -86,8 +86,8 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                                 }
                                 databaseService.InsertRecord(property);
                                 logger.Information($"{id} has been inserted successfully");
-                                row++;
-                                await Task.Delay(700, _cts.Token);
+                                Progress++;    
+                                await Task.Delay(700, CancellationTokenSource.Token);
                             }
                             if (oldContentCount == advItems.Count)
                             {
@@ -96,7 +96,8 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                             }
                             page++;
                         }
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
@@ -110,20 +111,20 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
                 }
             });
         }
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
-            _progress = 0;
+            CancellationTokenSource?.Cancel();
         }
     }
 }

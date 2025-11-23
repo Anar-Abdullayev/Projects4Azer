@@ -8,17 +8,19 @@
         private string? _floor;
         private string? _phoneNumbers;
         private string? _ownerType;
+        private string? _cixaris;
+        private string? _category;
 
 
         public int Id { get; set; } // bina_id , item_id
         public string? MainTitle { get; set; } // main_title
 
-        public string? Category { get; set; } // category
+        public string? Category { get { return _category is null ? null : _category.Contains("tikili") ? "Mənzil" : _category.Contains("Həyət evi") ? "Həyət evi" : _category; } set { _category = value; } }
         public string? Floor { get { return _floor?.Split("/")[0]; } set { _floor = value; } } // floor
         public string? City { get; set; }
         public string? Address { get; set; }
         public string? FullAddress { get { return City + ", " + Address; } } // address
-        public string? Area { get { return _area?.Split("m")[0].Replace("sot",""); } set { _area = value; } } // area
+        public string? Area { get { return _area?.Split("m")[0].Replace("sot", ""); } set { _area = value; } } // area
         public string? LandArea
         {
             get
@@ -33,14 +35,14 @@
         } // landarea
         public string? Ipoteka { get; set; }  // ipoteka
         public string? RentLong { get; set; } // post_tip
-        public string? BuildingType { get; set; } // building_type
-        public string? Cixaris { get; set; } // cixaris
+        public string? BuildingType { get { return _category is not null && _category.Contains("tikili") ? _category : null; } }
+        public string? Cixaris { get { return _cixaris is not null && _cixaris == "yoxdur" ? "yox" : _cixaris; } set { _cixaris = value; } } // cixaris
         public string? Repair { get; set; } // repair
         public string? RoomCount { get; set; } // room
         public string? Price { get; set; } // amount
         public string? Currency { get; set; } // currency
         public string? Owner { get; set; } // poster_name
-        public string? OwnerType { get { return _ownerType?.Replace(" (agent)", ""); } set { _ownerType = value; } } // poster_type
+        public string? OwnerType { get { return _ownerType is null ? null : _ownerType == "" ? "vasitəçi" : _ownerType?.Replace(" (agent)", ""); } set { _ownerType = value; } } // poster_type
         public string? PhoneNumbers { get { return _phoneNumbers?.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", ""); } set { _phoneNumbers = value; } }
         public string? Description { get; set; } // poster_note
         public string AdvLink { get; set; } // sayt_link
@@ -48,23 +50,5 @@
         public string? CreatedAt { get; set; }
         public DateTime? UpdatedTime { get; set; } // updated
 
-        public void PrintDetails()
-        {
-            Console.WriteLine("Elanın detalları:");
-            Console.WriteLine("İd: " + Id);
-            Console.WriteLine("Tarix: " + UpdatedTime.ToString());
-            Console.WriteLine("Başlıq: " + MainTitle);
-            Console.WriteLine("Şəhər: " + City);
-            Console.WriteLine("Yerləşmə yeri: " + Address);
-            Console.WriteLine("Sahə: " + Area);
-            Console.WriteLine("Kirayə müddəti: " + RentLong);
-            Console.WriteLine("Binanın tipi: " + BuildingType);
-            Console.WriteLine("Otaq sayı: " + RoomCount);
-            Console.WriteLine("Qiymət: " + Price + " " + Currency);
-            Console.WriteLine("Sahibi: " + Owner + $" ({OwnerType})");
-            Console.WriteLine("Əlaqə nömrələri: " + PhoneNumbers);
-            Console.WriteLine("Detallı: " + Description);
-            Console.WriteLine("Link: " + AdvLink);
-        }
     }
 }

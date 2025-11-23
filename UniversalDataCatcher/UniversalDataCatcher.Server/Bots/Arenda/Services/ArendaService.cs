@@ -1,45 +1,44 @@
-﻿using UniversalDataCatcher.Server.Services.Arenda.Helpers;
+﻿using HtmlAgilityPack;
+using Serilog;
+using UniversalDataCatcher.Server.Abstracts;
+using UniversalDataCatcher.Server.Helpers;
+using UniversalDataCatcher.Server.Services.Arenda.Helpers;
 
 namespace UniversalDataCatcher.Server.Services.Arenda.Services
 {
-    public class ArendaService
+    public class ArendaService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
         private ArendaMSSqlDatabaseService databaseService;
         private Serilog.ILogger logger;
-        public ArendaService(ArendaMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+
+        public ArendaService(ArendaMSSqlDatabaseService _databaseService)
         {
             databaseService = _databaseService;
-            logger = _logger.ForContext("ServiceName", nameof(ArendaService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(ArendaService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
-                databaseService = new ArendaMSSqlDatabaseService();
                 try
                 {
-                    while (!_cts.Token.IsCancellationRequested)
+                    while (!CancellationTokenSource.Token.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         bool continueSearch = true;
                         int page = 1;
                         DateTime targetDate = DateTime.Now.AddDays(-dayDifference);
                         var tillDateString = FormatHelper.FormatAzeriDate(targetDate);
                         var formattedDates = FormatHelper.GetFormattedDatesUntil(targetDate);
                         logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
-                        while (!_cts.Token.IsCancellationRequested && continueSearch)
+                        while (!CancellationTokenSource.Token.IsCancellationRequested && continueSearch)
                         {
                             var htmlContent = await ArendaHelper.GetPage(page);
                             if (htmlContent != null)
@@ -50,9 +49,10 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                     int row = 1;
                                     foreach (var propertyNode in propertyNodes)
                                     {
-                                        _cts.Token.ThrowIfCancellationRequested();
-                                        logger.Information($"{row}/{propertyNodes.Count} ({page} page) Starting process");
+                                        CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} page) Starting process");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1.Replace("elan_", "")));
+                                        //var existingRecord = databaseService.FindByElanLink(propertyNode.Item2);
                                         if (existingRecord != null)
                                         {
                                             logger.Information($"{existingRecord.Id} bazada tapıldı. Növbəti elana keçid edilir.");
@@ -68,16 +68,17 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                         property.Link = propertyNode.Item2;
                                         property.Created_At = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
                                         databaseService.InsertRecord(property);
-                                        _progress++;
-                                        await Task.Delay(TimeSpan.FromSeconds(1), _cts.Token);
+                                        Progress++;
+                                        await Task.Delay(TimeSpan.FromSeconds(1), CancellationTokenSource.Token);
                                     }
                                 }
                             }
                             page++;
-                            await Task.Delay(TimeSpan.FromSeconds(0.5), _cts.Token);
+                            await Task.Delay(TimeSpan.FromSeconds(0.5), CancellationTokenSource.Token);
                         }
                         logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
@@ -91,8 +92,11 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
                     logger.Information("Servis dayandırıldı.");
                 }
             });
@@ -100,10 +104,9 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
+            CancellationTokenSource?.Cancel();
         }
     }
 }

@@ -1,44 +1,44 @@
 ﻿using Microsoft.Playwright;
+using Serilog;
+using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.StaticConstants;
+using UniversalDataCatcher.Server.Helpers;
+using UniversalDataCatcher.Server.Services.Arenda.Services;
 
 namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
 {
-    public class YeniEmlakService
+    public class YeniEmlakService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
         private YeniemlakMSSqlDatabaseService databaseService;
         private Serilog.ILogger logger;
-        public YeniEmlakService(YeniemlakMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        public YeniEmlakService(YeniemlakMSSqlDatabaseService _databaseService)
         {
             databaseService = _databaseService;
-            logger = _logger.ForContext("ServiceName", nameof(YeniEmlakService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(YeniEmlakService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
                 try
                 {
-                    while (!_cts.Token.IsCancellationRequested)
+                    while (!CancellationTokenSource.Token.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         int page = 1;
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
                         targetDate = targetDate.AddDays(-dayDifference);
                         await YeniEmlakHelper.InitializeChromiumAsync();
-                        while (!_cts.IsCancellationRequested)
+                        while (!CancellationTokenSource.IsCancellationRequested)
                         {
                             TryAgain:
                             var htmlDocument = await YeniEmlakHelper.GetDocument(YeniEmlakConstants.BaseSearchUrl.Replace("XXXPAGEXXX", page.ToString()));
@@ -73,16 +73,18 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 property.Id = int.Parse(itemId);
                                 property.AdvLink = itemLink;
                                 databaseService.InsertRecord(property);
+                                Progress++;
                                 logger.Information($"Item Id with {item.Id} inserted successfully");
-                                await Task.Delay(700, _cts.Token);
+                                await Task.Delay(700, CancellationTokenSource.Token);
                             }
                             page++;
                             if (oldContentCount == advItems.Count)
                                 break;
-                            await Task.Delay(1500, _cts.Token);
+                            await Task.Delay(1500, CancellationTokenSource.Token);
                         }
                         logger.Information("Set to waiting");
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
@@ -96,19 +98,20 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
                 }
             });
         }
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
+            CancellationTokenSource?.Cancel();
         }
     }
 }

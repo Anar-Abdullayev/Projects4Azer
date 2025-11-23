@@ -30,7 +30,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
 
                 VALUES (
                     @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PosterPhone, @PosterName, 'YeniEmlak',
-                    @Id, @CreatedAt, @AdvLink, @BinaType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType
+                    @Id, @CreatedAt, @AdvLink, @Category, @BinaType, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType
                 );";
             var parameters = new
             {

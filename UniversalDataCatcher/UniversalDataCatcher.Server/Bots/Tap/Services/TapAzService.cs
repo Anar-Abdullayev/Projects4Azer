@@ -1,33 +1,31 @@
 ﻿using HtmlAgilityPack;
+using Serilog;
+using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.Tap.Consts;
 using UniversalDataCatcher.Server.Bots.Tap.Helpers;
+using UniversalDataCatcher.Server.Helpers;
+using UniversalDataCatcher.Server.Services.Arenda.Services;
 
 namespace UniversalDataCatcher.Server.Bots.Tap.Services
 {
-    public class TapAzService
+    public class TapAzService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
-
         private TapazMSSqlDatabaseService databaseService;
         private Serilog.ILogger logger;
 
-        public TapAzService(TapazMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        public TapAzService(TapazMSSqlDatabaseService _databaseService)
         {
             databaseService = _databaseService;
-            logger = _logger.ForContext("ServiceName", nameof(TapAzService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(TapAzService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
@@ -35,15 +33,16 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 try
                 {
 
-                    while (!_cts.IsCancellationRequested)
+                    while (!CancellationTokenSource.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         bool continueSearch = true;
                         int page = 1;
                         DateTime targetDate = DateTime.Now.AddDays(-dayDifference);
                         var tillDateString = FormatHelper.FormatAzeriDate(targetDate);
                         var formattedDates = FormatHelper.GetFormattedDatesUntil(targetDate);
                         string nextUrl = "/elanlar/dasinmaz-emlak";
-                        while (!_cts.IsCancellationRequested && continueSearch)
+                        while (!CancellationTokenSource.IsCancellationRequested && continueSearch)
                         {
                             var htmlContent = await tapazHelper.GetPage(nextUrl);
                             HtmlDocument doc = new HtmlDocument();
@@ -57,7 +56,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                     int row = 1;
                                     foreach (var propertyNode in propertyNodes)
                                     {
-                                        logger.Information($"{row}/{propertyNodes.Count} ({page} page)");
+                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} page)");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1));
                                         if (existingRecord != null)
                                         {
@@ -74,16 +73,17 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                         property.CreatedAt = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
                                         databaseService.InsertRecord(property);
                                         logger.Information("Yeni elan tapıldı və məlumat bazasına əlavə edildi:");
-                                        row++;
-                                        await Task.Delay(TimeSpan.FromSeconds(0.5), _cts.Token);
+                                        Progress++;
+                                        await Task.Delay(TimeSpan.FromSeconds(0.5), CancellationTokenSource.Token);
                                     }
                                 }
                             }
                             page++;
-                            await Task.Delay(TimeSpan.FromSeconds(0.5),_cts.Token);
+                            await Task.Delay(TimeSpan.FromSeconds(0.5),CancellationTokenSource.Token);
                         }
                         logger.Information($"Gözləmə rejimində... Növbəti yoxlama {repeatEvery} dəqiqədən sonra baş tutacaq.");
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
                 }
                 catch (OperationCanceledException)
@@ -96,19 +96,21 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
+                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
+            CancellationTokenSource?.Cancel();
         }
     }
 }

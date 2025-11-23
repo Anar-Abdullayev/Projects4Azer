@@ -28,6 +28,16 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
             return new ArendaProperty { Id = record.bina_id, Link = record.sayt_link };
         }
 
+        public ArendaProperty? FindByElanLink(string url)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            string selectQuery = $"SELECT bina_id, sayt_link FROM {_tableName} WHERE sayt_link = @Id AND sayt = 'ArendaAz';";
+            var record = connection.QuerySingleOrDefault<ArendaRecord>(selectQuery, new { Id = url });
+            if (record == null)
+                return null;
+            return new ArendaProperty { Id = record.bina_id, Link = record.sayt_link };
+        }
+
         public void InsertRecord(ArendaProperty record)
         {
             using var connection = new SqlConnection(_connectionString);

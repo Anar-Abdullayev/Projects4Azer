@@ -6,15 +6,15 @@ namespace UniversalDataCatcher.Server.Controllers.Emlak
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmlakController(EmlakService emlakService) : ControllerBase
+    public class EmlakController(EmlakService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (emlakService.IsRunning)
+            if (service.IsRunning)
                 return BadRequest("Service is already running.");
 
-            emlakService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            service.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
             return Ok("Service Started");
         }
@@ -22,9 +22,9 @@ namespace UniversalDataCatcher.Server.Controllers.Emlak
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!emlakService.IsRunning)
+            if (!service.IsRunning)
                 return BadRequest("Service is not running.");
-            emlakService.Stop();
+            service.Stop();
             return Ok("Service Stopped");
         }
 
@@ -34,8 +34,10 @@ namespace UniversalDataCatcher.Server.Controllers.Emlak
         {
             var response = new
             {
-                emlakService.Progress,
-                emlakService.IsRunning
+                service.Progress,
+                service.IsRunning,
+                service.SleepTime,
+                service.StartTime
             };
             return Ok(response);
         }

@@ -8,26 +8,26 @@ namespace UniversalDataCatcher.Server.Controllers.Tap
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TapController(TapAzService tapAzService) : ControllerBase
+    public class TapController(TapAzService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)
         {
-            if (tapAzService.IsRunning)
+            if (service.IsRunning)
                 return BadRequest("Service is already running.");
 
-            tapAzService.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
+            service.Start(request.DayDifference, (int)request.RepeatEveryMinutes!);
 
-            return Ok("Tapaz Service Started");
+            return Ok("Service Started");
         }
 
         [HttpPost("stop")]
         public ActionResult Stop()
         {
-            if (!tapAzService.IsRunning)
+            if (!service.IsRunning)
                 return BadRequest("Service is not running.");
-            tapAzService.Stop();
-            return Ok("Tapaz Service Stopped");
+            service.Stop();
+            return Ok("Service Stopped");
         }
 
 
@@ -36,8 +36,10 @@ namespace UniversalDataCatcher.Server.Controllers.Tap
         {
             var response = new
             {
-                tapAzService.Progress,
-                tapAzService.IsRunning
+                service.Progress,
+                service.IsRunning,
+                service.SleepTime,
+                service.StartTime
             };
             return Ok(response);
         }

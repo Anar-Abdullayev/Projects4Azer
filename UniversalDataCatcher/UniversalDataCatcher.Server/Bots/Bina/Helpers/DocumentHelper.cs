@@ -25,8 +25,6 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
                     property.Repair = value;
                 else if (label.StartsWith("Çıxarış"))
                     property.Cixaris = value;
-                else if (label.StartsWith("Binanın növü"))
-                    property.BuildingType = value;
                 else if (label.StartsWith("Torpaq sah"))
                     property.LandArea = value;
                 else if (label.StartsWith("İpoteka"))
@@ -81,6 +79,12 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
 
         public static string GetPostType(HtmlDocument doc)
         {
+            var rentLong = doc.DocumentNode.SelectSingleNode("//span[@class='price-per']");
+            if (rentLong is not null && rentLong.InnerText.Contains("gün"))
+                return "Günlük";
+            else if ((rentLong is not null && rentLong.InnerText.Contains("ay")))
+                return "Kirayə";
+
             var postTypeNode = doc.DocumentNode.SelectSingleNode("//a[contains(@class, 'product-breadcrumbs__i-link')]");
             var postType = "";
             if (postTypeNode is not null)
@@ -93,7 +97,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
             var creationTimeNode = doc.DocumentNode.SelectNodes("//span[contains(@class, 'product-statistics__i-text')]");
             var createdAtString = "";
             if (creationTimeNode is not null)
-                createdAtString = creationTimeNode[1].InnerText.Trim().Replace("Yeniləndi: ","");
+                createdAtString = creationTimeNode[1].InnerText.Trim().Replace("Yeniləndi: ", "");
             DateTime createdAt = DateTime.ParseExact(createdAtString, "dd.MM.yyyy, HH:mm",
                                                 CultureInfo.InvariantCulture);
             return createdAt.ToString();

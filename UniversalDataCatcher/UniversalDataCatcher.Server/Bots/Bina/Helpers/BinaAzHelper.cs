@@ -42,10 +42,13 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
         }
         public static async Task<BinaAzResponseRoot?> GetData(GraphqlQueryParams queryParams)
         {
+            TryAgain:
             var queryParamString = queryParams.ToQueryString();
             var apiResponse = await client.GetAsync($"/graphql?{queryParamString}");
             var apiBody = await apiResponse.Content.ReadAsStringAsync();
             var data = JsonSerializer.Deserialize<BinaAzResponseRoot>(apiBody);
+            if (data is null)
+                goto TryAgain;
             if (data is not null && data.Data.ItemsConnection != null)
             {
                 if (data.Data.ItemsConnection.PageInfo.HasNextPage)

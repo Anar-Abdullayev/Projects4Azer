@@ -1,45 +1,44 @@
-﻿using System.Text.Json;
+﻿using Serilog;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.EvTen.Helpers;
 using UniversalDataCatcher.Server.Bots.EvTen.Models;
 using UniversalDataCatcher.Server.Bots.EvTen.StaticConstants;
+using UniversalDataCatcher.Server.Helpers;
 
 namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 {
-    public class EvTenService
+    public class EvTenService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
         private EvTenMSSqlDatabaseService databaseService;
         private Serilog.ILogger logger;
-        public EvTenService(EvTenMSSqlDatabaseService _databaseService, Serilog.ILogger _logger)
+        public EvTenService(EvTenMSSqlDatabaseService _databaseService)
         {
             databaseService = _databaseService;
-            logger = _logger.ForContext("ServiceName", nameof(EvTenService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(EvTenService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
                 try
                 {
-                    while (!_cts.Token.IsCancellationRequested)
+                    while (!CancellationTokenSource.Token.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         int page = 1;
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
                         targetDate = targetDate.AddDays(-dayDifference);
-                        while (!_cts.IsCancellationRequested)
+                        while (!CancellationTokenSource.IsCancellationRequested)
                         {
                             logger.Information(page.ToString());
                             var htmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenBaseUrl.Replace("XXPAGEXX", page.ToString()));
@@ -50,9 +49,8 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             int row = 1;
                             foreach (var objJson in objects)
                             {
+                                logger.Information($"{row++}/{objects.Count} ({page} page) Starting process");
                                 string cleaned = Regex.Unescape(objJson);
-
-                                // Optional: trim surrounding quotes if objJson came quoted
                                 if (cleaned.StartsWith("\"") && cleaned.EndsWith("\""))
                                 {
                                     cleaned = cleaned.Substring(1, cleaned.Length - 2);
@@ -70,7 +68,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 EvTenProperty item = null;
                                 item = JsonSerializer.Deserialize<EvTenProperty>(cleaned)!;
                                 item.RenewedAt = item.RenewedAt.AddHours(4);
-                             
+                                
                                 if (item.RenewedAt < targetDate)
                                 {
                                     logger.Information($"Old content ({item.Id}) found, moving to next content");
@@ -97,6 +95,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                     detailedItem.Description = DocumentHelper.GetDescriptionFromMergedString(merged);
                                 detailedItem.HasIpoteka = DocumentHelper.HasIpotekaInfo(detailedHtmlString);
                                 databaseService.InsertRecord(detailedItem);
+                                Progress++;
                                 logger.Information($"Advertisement Id: {detailedItem.Id} has been inserted successfully");
                             }
                             if (oldContentCount >= objects.Count)
@@ -107,12 +106,14 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             page++;
                         }
                         logger.Information("Set to waiting");
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
+                    logger.Information("Service cancelled");
                 }
                 catch (Exception ex)
                 {
@@ -120,19 +121,20 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
                 }
             });
         }
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
+            CancellationTokenSource?.Cancel();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
         public static async Task InitializeChromiumAsync()
         {
             playwright = await Playwright.CreateAsync();
-            var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true, Timeout = 30000 });
+            var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true, Timeout = 300000 });
             var context = await browser.NewContextAsync();
             page = await context.NewPageAsync();
         }
@@ -27,8 +27,20 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
 
         public static async Task<string> GetDetailPageAsync(string url)
         {
-            await page.GotoAsync(url);
-            await page.WaitForSelectorAsync("price");
+            TryAgain:
+            try
+            {
+                await page.GotoAsync(url);
+                await page.WaitForSelectorAsync("price", new PageWaitForSelectorOptions { Timeout = 600000 });
+            }
+            catch (TimeoutException ex)
+            {
+                goto TryAgain;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             var responseString = await page.ContentAsync();
             return responseString;
         }
@@ -47,19 +59,19 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
             return itemNodes;
         }
 
-        public static Tuple<string,string,string> GetMainInfosFromAdvItemNode(HtmlNode node)
+        public static Tuple<string, string, string> GetMainInfosFromAdvItemNode(HtmlNode node)
         {
             var titleNodes = node.SelectNodes(".//titem");
             var tarix = titleNodes[1].SelectSingleNode("./g/b").InnerText;
             var id = titleNodes[2].SelectSingleNode("./g/b").InnerText;
             var advLink = node.SelectSingleNode(".//a[contains(@class, 'detail')]").GetAttributeValue("href", "NotFound");
-            return new Tuple<string, string, string>(id, tarix, YeniEmlakConstants.HostUrl+advLink);
+            return new Tuple<string, string, string>(id, tarix, YeniEmlakConstants.HostUrl + advLink);
         }
 
         public static YeniEmlakProperty GetPropertyFromDocument(HtmlDocument doc)
         {
             var property = new YeniEmlakProperty();
-            
+
             property.PostType = DocumentHelper.GetPostType(doc);
             property.Price = DocumentHelper.GetPrice(doc);
             property.CreatedAt = DocumentHelper.GetCreateDate(doc);

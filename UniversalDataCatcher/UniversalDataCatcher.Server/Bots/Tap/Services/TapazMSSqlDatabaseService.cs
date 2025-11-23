@@ -29,7 +29,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
 
                 VALUES (
                     @Id, @MainTitle, @Address, @Description, @Price, @Area, @RoomCount, @PhoneNumbers, @Owner, 'TapAz',
-                    @Id, @CreatedAt, @AdvLink, null, @Category, null, @AdvType, @LandArea, null, null, @OwnerType
+                    @Id, @CreatedAt, @AdvLink, @BuildingType, @Category, null, @AdvType, @LandArea, null, null, @OwnerType
                 );";
             var parameters = new
             {
@@ -47,6 +47,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 record.AdvType,
                 record.OwnerType,
                 record.LandArea,
+                record.BuildingType,
                 CreatedAt = record.CreatedAt.ToString(),
             };
             connection.Execute(sqlQuery, parameters);

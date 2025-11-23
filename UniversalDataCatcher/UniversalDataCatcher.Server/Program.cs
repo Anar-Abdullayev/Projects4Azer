@@ -43,20 +43,7 @@ namespace UniversalDataCatcher.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Host.UseSerilog((ctx, lc) =>
-            {
-                lc.Enrich.FromLogContext()
-                .WriteTo.File("logs/info/info-.log",
-                rollingInterval: RollingInterval.Day,
-                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
-                .WriteTo.File("logs/error/error-.log",
-                rollingInterval: RollingInterval.Day,
-                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
-                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}")
-                .WriteTo.Console(
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} {ServiceName} - {Message:lj}{NewLine}{Exception}");
-            });
+            builder.Host.UseSerilog();
             var app = builder.Build();
 
             app.UseDefaultFiles();

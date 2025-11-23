@@ -1,31 +1,30 @@
-﻿using UniversalDataCatcher.Server.Bots.Bina.Helpers;
+﻿using Serilog;
+using UniversalDataCatcher.Server.Abstracts;
+using UniversalDataCatcher.Server.Bots.Bina.Helpers;
 using UniversalDataCatcher.Server.Bots.Bina.Models;
+using UniversalDataCatcher.Server.Helpers;
+using UniversalDataCatcher.Server.Services.Arenda.Services;
 
 namespace UniversalDataCatcher.Server.Bots.Bina.Services
 {
-    public class BinaService
+    public class BinaService : BotService
     {
-        private CancellationTokenSource _cts;
-        private bool _isRunning = false;
-        private int _progress = 0;
-        public bool IsRunning => _isRunning;
-        public int Progress => _progress;
         private BinaMSSqlDatabaseService database;
         private Serilog.ILogger logger;
 
-        public BinaService(BinaMSSqlDatabaseService _database, Serilog.ILogger _logger)
+        public BinaService(BinaMSSqlDatabaseService _database)
         {
             database = _database;
-            logger = _logger.ForContext("ServiceName", nameof(BinaService));
+            logger = LoggerHelper.GetLoggerConfiguration(nameof(BinaService));
         }
 
         public void Start(int dayDifference, int repeatEvery)
         {
-            if (_isRunning)
+            if (IsRunning)
                 return;
-            _cts = new CancellationTokenSource();
-            _isRunning = true;
-            _progress = 0;
+            RepeatEvery = repeatEvery;
+            CancellationTokenSource = new CancellationTokenSource();
+            IsRunning = true;
 
             Task.Run(async () =>
             {
@@ -33,12 +32,12 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                 try
                 {
                     logger.Information("Servis başladıldı.");
-                    while (!_cts.IsCancellationRequested)
+                    while (!CancellationTokenSource.IsCancellationRequested)
                     {
+                        SleepTime = null;
                         DateTime endDate = DateTime.Today.AddDays(-dayDifference);
                         bool continueSearch = true;
                         int page = 1;
-                        int currentItem = 1;
                         await BinaAzHelper.StartInitialRun();
                         string? cursor = null;
                         Variables variables = new Variables() { first = 16, sort = "BUMPED_AT_DESC" };
@@ -48,15 +47,15 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                         }
                         Extensions extensions = new Extensions() { persistedQuery = new PersistedQuery() { version = 1, sha256Hash = "872e9c694c34b6674514d48e9dcf1b46241d3d79f365ddf20d138f18e74554c5" } };
                         GraphqlQueryParams queryParams = new GraphqlQueryParams() { variables = variables, extensions = extensions, operationName = "SearchItems" };
-                        while (!_cts.IsCancellationRequested && continueSearch)
+                        while (!CancellationTokenSource.IsCancellationRequested && continueSearch)
                         {
                             var dataPage = await BinaAzHelper.GetData(queryParams);
                             if (dataPage is null)
                                 return;
-
+                            int currentItem = 1;
                             foreach (var item in dataPage.Data.ItemsConnection.Edges)
                             {
-                                logger.Information($"{currentItem}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} page) Starting process");
+                                logger.Information($"{currentItem++}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} page) Starting process");
                                 var property = item.Node.GetInitialProperty();
                                 if (property.UpdatedTime < endDate)
                                 {
@@ -75,14 +74,14 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                                     throw new Exception("Html Content returned null or empty");
                                 var contentProperty = await helper.GetPropertyFromRawHTML(htmlString, property);
                                 database.InsertRecord(contentProperty);
-                                _progress++;
-                                await Task.Delay(500, _cts.Token);
+                                Progress++;
+                                await Task.Delay(500, CancellationTokenSource.Token);
                             }
-                            currentItem = 1;
                             page++;
-                            await Task.Delay(1500, _cts.Token);
+                            await Task.Delay(1500, CancellationTokenSource.Token);
                         }
-                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), _cts.Token);
+                        SleepTime = DateTime.Now;
+                        await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
 
@@ -97,20 +96,21 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                 }
                 finally
                 {
-                    _isRunning = false;
-                    _progress = 0;
-                    _cts.Dispose();
+                    IsRunning = false;
+                    SleepTime = null;
+                    Progress = 0;
+                    RepeatEvery = 0;
+                    CancellationTokenSource.Dispose();
+                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }
 
         public void Stop()
         {
-            if (!_isRunning)
+            if (!IsRunning)
                 return;
-            _cts.Cancel();
-            _isRunning = false;
-            _progress = 0;
+            CancellationTokenSource?.Cancel(); 
         }
     }
 }
