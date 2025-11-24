@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
+using System.Text.Json.Serialization;
+using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
@@ -25,6 +27,8 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         public long CreatedTime { get; set; }
         [JsonPropertyName("updated_time")]
         public long UpdatedTime { get; set; }
+        [JsonPropertyName("category_id")]
+        public int CategoryId { get; set; }
         [JsonPropertyName("is_vip")]
         public bool? IsVip { get; set; }
         [JsonPropertyName("url")]
@@ -32,7 +36,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         [JsonPropertyName("ad_label")]
         public string? Ad_Label { get; set; }
 
-        public string? Post_Type { get { return Ad_Label.Contains("satılır") ? "Satış" : Ad_Label.Contains("kirayə") ? "Kirayə" : "Bilinmir"; } }
+        public string? Post_Type { get { return Ad_Label.Contains("satılır") ? "Satış" : Ad_Label.Contains("kirayə") ? "Kirayə" : null; } }
 
         public string Address
         {
@@ -59,7 +63,8 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
 
         public string? RoomCount { get { var rooms = Parameters.FirstOrDefault(x => x.Id == 69); return rooms?.Value.Replace(" otaqlı", ""); } }
 
-        public string? BuildingType { get { return Title.Contains("Yeni tikili") ? "Yeni tikili" : Title.Contains("Köhnə tikili") ? "Köhnə tikili" : "Bilinmir"; } }
+        public string? BuildingType { get { return CategoryHelper.GetBuildingTypeName(CategoryId); } }
+        public string? Category { get { return CategoryHelper.GetCategoryName(CategoryId); } }
         public string? Floor { get { var floor = Parameters.FirstOrDefault(x => x.Id == 226); return floor?.Value; } }
         public string? Document { get { var document = Parameters.FirstOrDefault(x => x.Id == 888); return document is not null ? "var" : null; } }
         public string? Repair { get { var repair = Parameters.FirstOrDefault(x => x.Id == 352); return repair is not null ? repair.Value : "yoxdur"; } }

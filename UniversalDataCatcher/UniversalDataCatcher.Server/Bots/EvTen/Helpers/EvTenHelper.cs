@@ -70,9 +70,10 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 
                 // Move cursor after colon
                 int start = colonIndex + 1;
-
+                
                 // 2. Detect JSON start
-                if (merged[start] != '{' && merged[start] != '[')
+                char cStart = merged[start];
+                if (cStart != '{' && cStart != '[')
                 {
                     i = start + 1;
                     continue;
@@ -110,7 +111,6 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 
                     j++;
                 }
-
                 string json = merged.Substring(start, j - start);
                 dict[key] = json;
 
@@ -119,7 +119,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 
             return dict;
         }
-
+       
         public static string ResolveReferences(string json, Dictionary<string, string> dict)
         {
             bool changed = true;
@@ -194,7 +194,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 
         public static string ReplacePlaceholders(string json, Dictionary<string, string> dict)
         {
-            var pattern = @"\$(\w+)";
+            var pattern = @"\\?""?\$(\w+)\\?""?";
             string result = json;
             bool replaced;
 
@@ -204,8 +204,6 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
                 result = Regex.Replace(result, pattern, match =>
                 {
                     var key = match.Groups[1].Value;
-                    if (key == "$3b")
-                        return key;
                     if (dict.TryGetValue(key, out var value))
                     {
                         replaced = true;
@@ -217,14 +215,6 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Helpers
 
             return result;
         }
-        public static string FixJsonString(string json)
-        {
-            json = Regex.Unescape(json);
-            json = json.Replace("\"[", "[");
-            json = json.Replace("]\"", "]");
-            json = json.Replace("\"{", "{");
-            json = json.Replace("}\"", "}");
-            return json;
-        }
+
     }
 }

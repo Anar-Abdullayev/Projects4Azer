@@ -39,7 +39,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 )
                 VALUES (
                     @Id, @Title, @Address, @Description, @Price, @PropertyArea, @RoomCount, @Mobile, @Username, 'LalafoAz', 
-                    @Id, @CreatedTime, @Url, @BuildingType, @BuildingType, @Floor, @Post_Type, @LandArea, @Document, @Repair, @Poster_Type
+                    @Id, @CreatedTime, @Url, @BuildingType, @Category, @Floor, @Post_Type, @LandArea, @Document, @Repair, @Poster_Type
                 );";
 
             
@@ -56,6 +56,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 record.Username,
                 record.Url,
                 record.BuildingType,
+                record.Category,
                 record.Floor,
                 record.Post_Type,
                 record.LandArea,

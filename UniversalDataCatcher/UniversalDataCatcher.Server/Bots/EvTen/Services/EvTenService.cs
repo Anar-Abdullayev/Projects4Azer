@@ -51,10 +51,11 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             {
                                 logger.Information($"{row++}/{objects.Count} ({page} page) Starting process");
                                 string cleaned = Regex.Unescape(objJson);
-                                if (cleaned.StartsWith("\"") && cleaned.EndsWith("\""))
-                                {
-                                    cleaned = cleaned.Substring(1, cleaned.Length - 2);
-                                }
+                                if (cleaned.Contains(""))
+                                    if (cleaned.StartsWith("\"") && cleaned.EndsWith("\""))
+                                    {
+                                        cleaned = cleaned.Substring(1, cleaned.Length - 2);
+                                    }
                                 cleaned = Regex.Replace(
                                     cleaned,
                                     "\"images\":\"(\\[.*?\\])\"",
@@ -68,7 +69,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 EvTenProperty item = null;
                                 item = JsonSerializer.Deserialize<EvTenProperty>(cleaned)!;
                                 item.RenewedAt = item.RenewedAt.AddHours(4);
-                                
+
                                 if (item.RenewedAt < targetDate)
                                 {
                                     logger.Information($"Old content ({item.Id}) found, moving to next content");
@@ -88,7 +89,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 if (!dict.TryGetValue(postingKey.Replace("$", ""), out string postingJson))
                                     throw new Exception($"{postingKey} not found in dictionary");
                                 postingJson = EvTenHelper.ReplacePlaceholders(postingJson, dict);
-                                postingJson = EvTenHelper.FixJsonString(postingJson);
+                                postingJson = Regex.Unescape(postingJson);
                                 var detailedItem = JsonSerializer.Deserialize<EvTenPropertyDetails>(postingJson);
                                 detailedItem.MainTitle = DocumentHelper.GetMainTitle(detailedHtmlString);
                                 if (detailedItem.Description == "$3b")
