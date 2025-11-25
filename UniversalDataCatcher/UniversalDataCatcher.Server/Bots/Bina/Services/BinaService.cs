@@ -69,9 +69,21 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                                     logger.Information($"Recording with this id ({property.Id}) exists");
                                     continue;
                                 }
+                                var retryDetails = 0;
+                                TryGettingDetails:
                                 var htmlString = await helper.GetPage($"/items/{property.Id}");
                                 if (string.IsNullOrEmpty(htmlString))
-                                    throw new Exception("Html Content returned null or empty");
+                                {
+                                    retryDetails++;
+                                    await Task.Delay(TimeSpan.FromSeconds(15), CancellationTokenSource.Token);
+                                    if (retryDetails == 3)
+                                    {
+                                        logger.Error("Html content is null for property id: " + property.Id);
+                                        logger.Error("Url: " + Constants.Constants.BaseUrl + "/items/" + property.Id);
+                                        continue;
+                                    }
+                                    goto TryGettingDetails;
+                                }
                                 var contentProperty = await helper.GetPropertyFromRawHTML(htmlString, property);
                                 database.InsertRecord(contentProperty);
                                 Progress++;
@@ -92,7 +104,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.Information(ex.ToString());
+                    logger.Error(ex.ToString());
                 }
                 finally
                 {
@@ -110,7 +122,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
         {
             if (!IsRunning)
                 return;
-            CancellationTokenSource?.Cancel(); 
+            CancellationTokenSource?.Cancel();
         }
     }
 }
