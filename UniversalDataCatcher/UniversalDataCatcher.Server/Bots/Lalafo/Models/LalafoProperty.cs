@@ -101,6 +101,11 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         [JsonPropertyName("original_url")]
         public string? OriginalUrl { get; set; } = "";
     }
+
+    public class LalafoParamLink
+    {
+
+    }
 }
 
 

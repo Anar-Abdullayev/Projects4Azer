@@ -57,7 +57,9 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                                     outDateCount++;
                                     continue;
                                 }
-                                var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
+                                
+                                //var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
+                                var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, 70687302);
                                 propertyDetails.Ad_Label = item.Ad_Label;
                                 databaseService.InsertRecord(propertyDetails);
                                 Progress++;
