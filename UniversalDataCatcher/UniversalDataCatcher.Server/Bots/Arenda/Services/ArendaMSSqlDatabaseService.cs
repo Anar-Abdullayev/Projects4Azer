@@ -50,7 +50,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 VALUES (
                     @ElanId, @MainTitle, @Address, @Description,
                     @Price, @PropertySize, @RoomCount, @ContactNumbers, @Owner,
-                    'ArendaAz', @Id, @Created_At, @Link, @SecondaryTitle, @SecondaryTitle, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type
+                    'ArendaAz', @Id, @Created_At, @Link, @BinaType, @Category, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type
                 );";
 
             var elanId = record.Id.Replace("elan_", "");
@@ -74,6 +74,8 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 record.Document,
                 record.Repair,
                 record.Poster_Type,
+                record.Category,
+                record.BinaType,
                 PropertyFeatures = record.PropertyFeatures != null ? JsonSerializer.Serialize(record.PropertyFeatures) : null,
                 PropertyMainInfos = record.PropertyMainInfos != null ? JsonSerializer.Serialize(record.PropertyMainInfos) : null,
                 Created_At = record.Created_At.ToString(),

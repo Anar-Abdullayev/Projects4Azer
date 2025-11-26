@@ -36,7 +36,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         [JsonPropertyName("ad_label")]
         public string? Ad_Label { get; set; }
 
-        public string? Post_Type { get { return Ad_Label.Contains("satılır") ? "Satış" : Ad_Label.Contains("kirayə") ? "Kirayə" : null; } }
+        public string? Post_Type { get { return Ad_Label is null ? null : Ad_Label.ToLower().Contains("satılır") ? "Satış" : Ad_Label.ToLower().Contains("kirayə") ? "Kirayə" : null; } }
 
         public string Address
         {

@@ -35,7 +35,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
             {
                 record.Id,
                 record.MainTitle,
-                record.Address,
+                Address = record.FinalAddress,
                 record.Description,
                 record.Price,
                 record.Area,

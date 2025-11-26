@@ -11,8 +11,15 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Models
         public string MainTitle { get; set; }
 
 
-        public string City { get; set; } // Şəhər
-        public string Address { get; set; } // Yerləşdirmə yeri / Yerləşmə yeri
+        public string? City { get; set; }
+        public string? Address { get; set; }
+        public string? FinalAddress
+        {
+            get
+            {
+                return $"{City}, {Address}";
+            }
+        }
         public string AdvType
         {
             get

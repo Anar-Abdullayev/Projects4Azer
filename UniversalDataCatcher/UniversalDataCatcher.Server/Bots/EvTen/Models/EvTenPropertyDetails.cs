@@ -114,7 +114,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
         public string PosterType { get { return IsAgent ? "vasitəçi" : "mülkiyyətçi"; } }
         [JsonPropertyName("has_license")]
         public bool? Has_License { get; set; }
-        public string? Document { get { return Has_License is null ? null : (bool)Has_License ? "var" : "yoxdur"; } }
+        public string? Document { get { return Has_License is null ? null : (bool)Has_License ? "var" : "yox"; } }
 
         [JsonPropertyName("renovated")]
         public bool Renovated { get; set; }
