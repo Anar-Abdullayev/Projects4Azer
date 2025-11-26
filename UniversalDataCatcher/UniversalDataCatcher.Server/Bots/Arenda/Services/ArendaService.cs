@@ -88,7 +88,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.Information($"ERROR: An unexpected error occurred in Arenda Bot Service: {ex.Message}");
+                    logger.Error($"ERROR: An unexpected error occurred in Arenda Bot Service: {ex.Message}");
                 }
                 finally
                 {

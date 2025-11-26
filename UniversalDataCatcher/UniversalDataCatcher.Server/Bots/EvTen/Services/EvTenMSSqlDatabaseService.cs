@@ -31,7 +31,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 
                 VALUES (
                     @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PhoneNumber, @OwnerName, 'Ev10',
-                    @Id, @CreatedAt, @AdvLink, @PropertyType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType, @Ipoteka
+                    @Id, @CreatedAt, @AdvLink, @BinaType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType, @Ipoteka
                 );";
             var parameters = new
             {
@@ -54,7 +54,8 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 record.LandArea,
                 record.Category,
                 record.MainTitle,
-                record.Ipoteka
+                record.Ipoteka,
+                record.BinaType,
             };
             connection.Execute(sqlQuery, parameters);
         }

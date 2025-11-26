@@ -102,10 +102,6 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         public string? OriginalUrl { get; set; } = "";
     }
 
-    public class LalafoParamLink
-    {
-
-    }
 }
 
 

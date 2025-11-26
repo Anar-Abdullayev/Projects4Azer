@@ -92,7 +92,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.Information(ex.ToString());
+                    logger.Error(ex.ToString());
                 }
                 finally
                 {

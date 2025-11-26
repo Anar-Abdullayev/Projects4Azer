@@ -77,12 +77,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
             get
             {
                 if (PropertyType == "apartment")
-                {
-                    if (IsNewBuilding)
-                        return "Yeni tikili";
-                    else
-                        return "Köhnə tikili";
-                }
+                    return "Mənzil";
                 if (PropertyType == "office")
                     return "Ofis";
                 if (PropertyType == "house")
@@ -91,6 +86,25 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
                     return "Obyekt";
                 if (PropertyType == "land")
                     return "Torpaq";
+                if (PropertyType == "garage")
+                    return "Qaraj";
+                if (PropertyType is not null)
+                    return PropertyType;
+                return null;
+            }
+        }
+
+        public string? BinaType
+        {
+            get
+            {
+                if (PropertyType == "apartment")
+                {
+                    if (IsNewBuilding)
+                        return "Yeni tikili";
+                    else
+                        return "Köhnə tikili";
+                }
                 return null;
             }
         }

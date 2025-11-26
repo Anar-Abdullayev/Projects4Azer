@@ -38,7 +38,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                         logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!CancellationTokenSource.IsCancellationRequested && continueSearch)
                         {
-                            var itemPosition = 0;
+                            var itemPosition = 1;
                             var items = await LalafoHelper.FetchApiPageAsync(cookies, page);
                             var outDateCount = 0;
                             foreach (var item in items)
@@ -84,7 +84,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 }
                 catch (Exception ex)
                 {
-                    logger.Information(ex.ToString());
+                    logger.Error(ex.ToString());
                 }
                 finally
                 {
