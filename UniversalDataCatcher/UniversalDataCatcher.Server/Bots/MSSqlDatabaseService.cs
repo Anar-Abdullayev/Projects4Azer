@@ -97,6 +97,7 @@ namespace UniversalDataCatcher.Server.Services
                                 sayt NVARCHAR(30) NULL,
                                 sayt_link NVARCHAR(MAX) NULL,
                                 status INT NULL,
+                                ReferenceId BIGINT NULL
                             );
                         END
                 ");

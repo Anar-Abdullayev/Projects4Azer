@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
 using static System.Net.Mime.MediaTypeNames;
@@ -72,10 +73,19 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         {
             get
             {
-                var poster = Parameters.FirstOrDefault(x => x.Value_id == 19055 || x.Value_id == 19057);
-                if (poster is null)
-                    return "Bilinmir";
-                return poster.Value_id == 19057 ? "mülkiyyətçi" : "vasitəçi";
+                var propParams = Parameters.FirstOrDefault(x => x.Id == 256);
+                if (propParams != null)
+                {
+                    var links = propParams.Links;
+                    if (links != null && links.Count > 0)
+                    {
+                        var valueIds = links.Select(x => x.Value_id).ToList();
+                        return String.Join(",", valueIds);
+                    }
+                    else
+                        return "Bilinmir";
+                }
+                return null;
             }
         }
 
@@ -94,12 +104,20 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         public string? Value { get; set; } = "";
         [JsonPropertyName("value_id")]
         public int? Value_id { get; set; }
+        [JsonPropertyName("links")]
+        public List<SubNavigationLinks>? Links { get; set; }
     }
 
     public class Image
     {
         [JsonPropertyName("original_url")]
         public string? OriginalUrl { get; set; } = "";
+    }
+
+    public class SubNavigationLinks
+    {
+        [JsonPropertyName("value_id")]
+        public int? Value_id { get; set; }
     }
 
 }
