@@ -10,6 +10,7 @@
         private string? _ownerType;
         private string? _cixaris;
         private string? _category;
+        private string? _renovation;
 
 
         public int Id { get; set; } // bina_id , item_id
@@ -37,7 +38,7 @@
         public string? RentLong { get; set; } // post_tip
         public string? BuildingType { get { return _category is not null && _category.Contains("tikili") ? _category : null; } }
         public string? Cixaris { get { return _cixaris is not null && _cixaris == "yoxdur" ? "yox" : _cixaris; } set { _cixaris = value; } } // cixaris
-        public string? Repair { get; set; } // repair
+        public string? Repair { get { return _renovation is null ? null : _renovation == "yoxdur" ? "yox" : "var"; } set { _renovation = value; } } // repair
         public string? RoomCount { get; set; } // room
         public string? Price { get; set; } // amount
         public string? Currency { get; set; } // currency

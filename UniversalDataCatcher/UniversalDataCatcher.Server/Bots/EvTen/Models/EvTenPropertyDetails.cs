@@ -118,7 +118,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
 
         [JsonPropertyName("renovated")]
         public bool Renovated { get; set; }
-        public string Renovation { get { return Renovated ? "təmirli" : "təmirsiz"; } }
+        public string Renovation { get { return Renovated ? "var" : "yox"; } }
 
         [JsonPropertyName("is_new_building")]
         public bool IsNewBuilding { get; set; }

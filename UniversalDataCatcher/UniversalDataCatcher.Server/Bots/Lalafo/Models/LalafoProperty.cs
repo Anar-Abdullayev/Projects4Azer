@@ -68,7 +68,20 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
         public string? Category { get { return CategoryHelper.GetCategoryName(CategoryId); } }
         public string? Floor { get { var floor = Parameters.FirstOrDefault(x => x.Id == 226); return floor?.Value; } }
         public string? Document { get { var document = Parameters.FirstOrDefault(x => x.Id == 888); return document is not null ? "var" : null; } }
-        public string? Repair { get { var repair = Parameters.FirstOrDefault(x => x.Id == 352); return repair is not null ? repair.Value : "yoxdur"; } }
+        public string? Repair
+        {
+            get
+            {
+                var repair = Parameters.FirstOrDefault(x => x.Id == 352);
+                if (repair is null)
+                    return null;
+                if (repair.Value!.Contains("Orta") || repair.Value.Contains("Yeni"))
+                    return "var";
+                if (repair.Value == "Təmirsiz")
+                    return "yox";
+                return repair.Value;
+            }
+        }
         public string? Poster_Type
         {
             get
@@ -77,13 +90,14 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Models
                 if (propParams != null)
                 {
                     var links = propParams.Links;
+
                     if (links != null && links.Count > 0)
                     {
-                        var valueIds = links.Select(x => x.Value_id).ToList();
-                        return String.Join(",", valueIds);
+                        if (links.Any(l => l.Value_id == 19055))
+                            return "vasitəçi";
+                        else if (links.Any(l => l.Value_id == 19057 || l.Value_id == 29522 || l.Value_id == 29523))
+                            return "mülkiyyətçi";
                     }
-                    else
-                        return "Bilinmir";
                 }
                 return null;
             }

@@ -6,6 +6,7 @@
         private string? _posterPhone;
         private string? _binaType;
         private string? _category;
+        private string? _renovation;
 
 
         public int Id { get; set; }
@@ -22,7 +23,7 @@
         public string? Category { get { return string.IsNullOrEmpty(_category) ? null : _category; } set { _category = value; } } // Binatype
         public string? PosterName { get; set; }
         public string? PosterType { get; set; }
-        public string? Renovation { get; set; }
+        public string? Renovation { get { return _renovation is null ? null : _renovation == "təmirli" ? "var" : null; } set { _renovation = value; } }
 
 
         public string? BinaType // Category

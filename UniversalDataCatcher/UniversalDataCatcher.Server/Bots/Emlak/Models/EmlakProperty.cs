@@ -10,6 +10,8 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Models
         private string? _posterType;
         private string? _posterPhone;
         private string? _address;
+        private string? _renovation;
+
         public int Id { get; set; }
         public string AdvLink { get; set; }
         public string MainTitle { get; set; }
@@ -46,7 +48,7 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Models
         public string? Rooms { get; set; }
         public string? Floor { get; set; }
         public string? ApartmentFloor { get; set; }
-        public string? Renovation { get; set; }
+        public string? Renovation { get { return _renovation is null ? null : _renovation.Contains("təmirli") ? "var" : _renovation == "Təmirsiz" ? "yox" : _renovation; } set { _renovation = value; } }
         public string? Document { get { return _document is not null && _document.Contains("Kupça") ? "var" : null; } set { _document = value; } }
         public string? PosterName { get; set; }
         public string? PosterPhone { get { return _posterPhone.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", ""); } set { _posterPhone = value; } }
