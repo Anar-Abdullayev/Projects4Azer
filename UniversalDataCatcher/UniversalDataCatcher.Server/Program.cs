@@ -1,5 +1,7 @@
 ﻿
+using Microsoft.Data.SqlClient;
 using Serilog;
+using System.Data;
 using System.Text;
 using UniversalDataCatcher.Server.Bots.Bina.Services;
 using UniversalDataCatcher.Server.Bots.Emlak.Services;
@@ -7,6 +9,7 @@ using UniversalDataCatcher.Server.Bots.EvTen.Services;
 using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 using UniversalDataCatcher.Server.Bots.Tap.Services;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.Services;
+using UniversalDataCatcher.Server.Interfaces;
 using UniversalDataCatcher.Server.Services;
 using UniversalDataCatcher.Server.Services.Arenda.Services;
 
@@ -20,7 +23,7 @@ namespace UniversalDataCatcher.Server
             var builder = WebApplication.CreateBuilder(args);
 
             MSSqlDatabaseService.Initialize(builder.Configuration);
-
+            var connectionString = MSSqlDatabaseService.GetConnectionString();
             builder.Services.AddSingleton<EvTenService>();
             builder.Services.AddSingleton<EvTenMSSqlDatabaseService>();
             builder.Services.AddSingleton<ArendaService>();
@@ -35,7 +38,8 @@ namespace UniversalDataCatcher.Server
             builder.Services.AddSingleton<YeniemlakMSSqlDatabaseService>();
             builder.Services.AddSingleton<EmlakService>();
             builder.Services.AddSingleton<EmlakMSSqlDatabaseService>();
-
+            builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
+            builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();

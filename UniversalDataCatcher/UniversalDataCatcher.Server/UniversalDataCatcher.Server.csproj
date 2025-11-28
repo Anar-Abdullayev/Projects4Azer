@@ -28,10 +28,4 @@
     <ProjectReference Include="..\universaldatacatcher.client\universaldatacatcher.client.esproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="Repositories\Concrete\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

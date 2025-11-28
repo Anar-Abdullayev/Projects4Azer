@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using UniversalDataCatcher.Server.Dtos;
+using UniversalDataCatcher.Server.Entities;
+using UniversalDataCatcher.Server.Interfaces;
 
 namespace UniversalDataCatcher.Server.Controllers
 {
@@ -7,11 +10,17 @@ namespace UniversalDataCatcher.Server.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult> GetPosts()
+        private IAdvertisementService _advertisementService;
+        public PostsController(IAdvertisementService advertisementService)
         {
-
-            return Ok("PostsController is working!");
+            _advertisementService = advertisementService;
+            _advertisementService.SetTable("post");
+        }
+        [HttpPost]
+        public async Task<ActionResult> GetPosts([FromBody] AdvertisementFilter? filter)
+        {
+            var result = await _advertisementService.GetAllAsync(filter);
+            return Ok(result);
         }
     }
 }

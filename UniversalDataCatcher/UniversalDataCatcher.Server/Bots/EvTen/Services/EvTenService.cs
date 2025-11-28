@@ -5,17 +5,20 @@ using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.EvTen.Helpers;
 using UniversalDataCatcher.Server.Bots.EvTen.Models;
 using UniversalDataCatcher.Server.Bots.EvTen.StaticConstants;
+using UniversalDataCatcher.Server.Entities;
+using UniversalDataCatcher.Server.Extentions;
 using UniversalDataCatcher.Server.Helpers;
+using UniversalDataCatcher.Server.Interfaces;
 
 namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 {
     public class EvTenService : BotService
     {
-        private EvTenMSSqlDatabaseService databaseService;
+        private EvTenMSSqlDatabaseService _databaseService;
         private Serilog.ILogger logger;
-        public EvTenService(EvTenMSSqlDatabaseService _databaseService)
+        public EvTenService(EvTenMSSqlDatabaseService databaseService)
         {
-            databaseService = _databaseService;
+            _databaseService = databaseService;
             logger = LoggerHelper.GetLoggerConfiguration(nameof(EvTenService));
         }
 
@@ -76,7 +79,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                     oldContentCount++;
                                     continue;
                                 }
-                                if (databaseService.FindById(item.Id) is not null)
+                                if (_databaseService.FindById(item.Id) is not null)
                                 {
                                     logger.Information($"Recording with this id ({item.Id}) exists");
                                     continue;
@@ -95,7 +98,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 if (detailedItem.Description == "$3b")
                                     detailedItem.Description = DocumentHelper.GetDescriptionFromMergedString(merged);
                                 detailedItem.HasIpoteka = DocumentHelper.HasIpotekaInfo(detailedHtmlString);
-                                databaseService.InsertRecord(detailedItem);
+                                _databaseService.InsertRecord(detailedItem);
                                 Progress++;
                                 logger.Information($"Advertisement Id: {detailedItem.Id} has been inserted successfully");
                             }
