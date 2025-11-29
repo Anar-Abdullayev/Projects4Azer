@@ -21,7 +21,10 @@ namespace UniversalDataCatcher.Server
         {
             Console.OutputEncoding = Encoding.UTF8;
             var builder = WebApplication.CreateBuilder(args);
-
+            Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()    
+    .MinimumLevel.Debug() 
+    .CreateLogger();
             MSSqlDatabaseService.Initialize(builder.Configuration);
             var connectionString = MSSqlDatabaseService.GetConnectionString();
             builder.Services.AddSingleton<EvTenService>();

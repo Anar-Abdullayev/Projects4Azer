@@ -16,11 +16,19 @@ namespace UniversalDataCatcher.Server.Controllers
             _advertisementService = advertisementService;
             _advertisementService.SetTable("post");
         }
+
         [HttpPost]
-        public async Task<ActionResult> GetPosts([FromBody] AdvertisementFilter? filter)
+        public async Task<ActionResult> GetPosts([FromBody] AdvertisementFilter filter)
         {
+            if (filter.HideRepeats)
+                await _advertisementService.StartSearchingRepeatedAdverts();
             var result = await _advertisementService.GetAllAsync(filter);
-            return Ok(result);
+            var count = await _advertisementService.CountAsync(filter);
+            return Ok(new
+            {
+                Posts = result,
+                TotalCount = count
+            });
         }
     }
 }
