@@ -41,18 +41,6 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Models
     {
         [JsonPropertyName("node")]
         public ESItem Node { get; set; }
-        public void PrintDetails()
-        {
-            string priceType = Node.Leased == true ? Node.PaidDaily == true ? "/ gün" : "/ ay" : "";
-            Console.WriteLine($"Id: {Node.Id}");
-            Console.WriteLine($"Area: {Node.Area?.Value} {Node.Area?.Units}");
-            Console.WriteLine($"Floor: {Node.Floor} / {Node.Floors}");
-            Console.WriteLine($"Location: {Node.City?.Name}, {Node.Location?.FullName}");
-            Console.WriteLine($"Price: {Node.Price.Value} {Node.Price.Currency} {priceType}");
-            Console.WriteLine($"Rooms: {Node.Rooms}");
-            Console.WriteLine($"Updated at: {Node.UpdatedAt.ToString()}");
-            Console.WriteLine($"Path: {Constants.Constants.BaseUrl}{Node.Path}");
-        }
     }
 
     public class ESItem
@@ -134,6 +122,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Models
             property.RoomCount = Rooms?.ToString();
             property.RentLong = Leased == true ? PaidDaily == true ? "Gündəlik" : "Aylıq" : "Satış";
             property.UpdatedTime = UpdatedAt;
+
             return property;
         }
     }

@@ -45,12 +45,12 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 INSERT INTO dbo.{_tableName} (
                     bina_id, main_title, address, poster_note,
                     amount, area, room, poster_phone, poster_name, sayt, item_id, post_create_date, sayt_link,
-                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type, imageUrls
                 )
                 VALUES (
                     @ElanId, @MainTitle, @Address, @Description,
                     @Price, @PropertySize, @RoomCount, @ContactNumbers, @Owner,
-                    'ArendaAz', @Id, @Created_At, @Link, @BinaType, @Category, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type
+                    'ArendaAz', @Id, @Created_At, @Link, @BinaType, @Category, @Floor, @Post_Type, @TorpaqArea, @Document, @Repair, @Poster_Type, @ImageUrls
                 );";
 
             var elanId = record.Id.Replace("elan_", "");
@@ -76,6 +76,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 record.Poster_Type,
                 record.Category,
                 record.BinaType,
+                record.ImageUrls,
                 PropertyFeatures = record.PropertyFeatures != null ? JsonSerializer.Serialize(record.PropertyFeatures) : null,
                 PropertyMainInfos = record.PropertyMainInfos != null ? JsonSerializer.Serialize(record.PropertyMainInfos) : null,
                 Created_At = record.Created_At.ToString(),

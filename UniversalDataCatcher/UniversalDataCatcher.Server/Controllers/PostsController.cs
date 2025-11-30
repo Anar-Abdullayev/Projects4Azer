@@ -30,5 +30,30 @@ namespace UniversalDataCatcher.Server.Controllers
                 TotalCount = count
             });
         }
+
+        [HttpGet("{id}/downloadimages")]
+        public async Task<ActionResult> DownloadImages(int id, [FromServices] IImageService _imageService, [FromServices] IConfiguration configuration)
+        {
+            var advertisement = await _advertisementService.GetAsync(id);
+            if (advertisement == null)
+                return BadRequest("Post not found");
+
+            if (string.IsNullOrEmpty(advertisement.ImageUrls))
+                return BadRequest("Post has empty image urls");
+
+            var imageUrls = advertisement.ImageUrls.Split(", ");
+            var baseFolder = configuration["ImageSettings:BaseFolder"];
+            var folderPath = baseFolder + advertisement.Sayt;
+            int index = 0;
+            foreach (var imageUrl in imageUrls)
+            {
+                var byteArray = await _imageService.DownloadImageByteArray(imageUrl);
+                var fileExtention = Path.GetExtension(imageUrl);
+                var filename = $"image_{index++}{fileExtention}";
+                await _imageService.UploadImageTo(folderPath, advertisement.Bina_Id.ToString()!, filename, byteArray);
+            }
+
+            return Ok();
+        }
     }
 }

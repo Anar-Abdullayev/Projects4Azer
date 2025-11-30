@@ -72,5 +72,7 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Models
             set { _address = value; }
         }
         public string PostType { get { return MainTitle.StartsWith("Satılır") ? "Satış" : MainTitle.StartsWith("İcarəyə") ? "Kirayə" : MainTitle.Split(" ")[0]; } }
+
+        public string? ImageUrls { get; set; }
     }
 }

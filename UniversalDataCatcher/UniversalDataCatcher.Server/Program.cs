@@ -39,6 +39,7 @@ namespace UniversalDataCatcher.Server
             builder.Services.AddSingleton<EmlakMSSqlDatabaseService>();
             builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
             builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
+            builder.Services.AddScoped<IImageService, LocalImageService>();
 
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();

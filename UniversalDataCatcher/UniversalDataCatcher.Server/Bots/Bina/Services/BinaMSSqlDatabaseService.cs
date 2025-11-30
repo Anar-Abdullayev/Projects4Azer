@@ -24,13 +24,13 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                 INSERT INTO dbo.{_tableName} (
                     bina_id, main_title, address, poster_note, amount, area, room, poster_phone, poster_name, sayt, 
                     item_id, post_create_date, sayt_link, binatype, category, floor, post_tip, torpaqarea, document, 
-                    renovation, poster_type, currency, ipoteka
+                    renovation, poster_type, currency, ipoteka, imageUrls
                 )
 
                 VALUES (
                     @Id, @MainTitle, @FullAddress, @Description, @Price, @Area, @RoomCount, @PhoneNumbers, @Owner, 'BinaAz',
                     @Id, @CreatedAt, @AdvLink, @BuildingType, @Category, @Floor, @Post_Type, @LandArea, @Cixaris, @Repair, @OwnerType, @Currency,
-                    @Ipoteka
+                    @Ipoteka, @ImageUrls
                 );";
 
             connection.Execute(sqlQuery, record);

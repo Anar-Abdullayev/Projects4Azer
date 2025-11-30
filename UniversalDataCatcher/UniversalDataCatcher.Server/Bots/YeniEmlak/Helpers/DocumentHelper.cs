@@ -172,5 +172,16 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
             if (renovationNode is null) return null;
             return "təmirli";
         }
+
+        public static string? GetImageUrls(HtmlDocument doc)
+        {
+            var imageNodes = doc.DocumentNode.SelectNodes("//div[@class='imgbox']/div/a");
+            if (imageNodes.Count > 0)
+            {
+                var imageUrls = imageNodes.Select(a => a.GetAttributeValue("href", ""));
+                return string.Join(", ", imageUrls);
+            }
+            return null;
+        }
     }
 }

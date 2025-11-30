@@ -75,6 +75,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Models
         public string Description { get; set; }
 
         public string AdvLink { get; set; }
+        public string? ImageUrls { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

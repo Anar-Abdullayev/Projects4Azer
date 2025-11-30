@@ -92,46 +92,46 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Helpers
             return JsonSerializer.Deserialize<LalafoProperty>(json)!;
         }
 
-        public static async Task DownloadImagesAsync(JsonElement itemDetail, string baseDir = "./images")
-        {
-            var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-            var title = itemDetail.GetProperty("title").GetString() ?? "untitled";
-            var id = itemDetail.GetProperty("id").GetInt32();
-            var safeTitle = SanitizeTitle(title);
-            var folderName = $"{timestamp}-{safeTitle}-{id}";
-            var folderPath = Path.Combine(baseDir, folderName);
+        //public static async Task DownloadImagesAsync(JsonElement itemDetail, string baseDir = "./images")
+        //{
+        //    var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
+        //    var title = itemDetail.GetProperty("title").GetString() ?? "untitled";
+        //    var id = itemDetail.GetProperty("id").GetInt32();
+        //    var safeTitle = SanitizeTitle(title);
+        //    var folderName = $"{timestamp}-{safeTitle}-{id}";
+        //    var folderPath = Path.Combine(baseDir, folderName);
 
-            Directory.CreateDirectory(folderPath);
-            var images = itemDetail.GetProperty("images").EnumerateArray();
+        //    Directory.CreateDirectory(folderPath);
+        //    var images = itemDetail.GetProperty("images").EnumerateArray();
 
-            foreach (var (img, index) in images.Select((v, i) => (v, i + 1)))
-            {
-                var url = img.GetProperty("original_url").GetString();
-                var ext = Path.GetExtension(url);
-                var filePath = Path.Combine(folderPath, $"image_{index}{ext}");
+        //    foreach (var (img, index) in images.Select((v, i) => (v, i + 1)))
+        //    {
+        //        var url = img.GetProperty("original_url").GetString();
+        //        var ext = Path.GetExtension(url);
+        //        var filePath = Path.Combine(folderPath, $"image_{index}{ext}");
 
-                try
-                {
-                    using var client = new HttpClient();
-                    var bytes = await client.GetByteArrayAsync(url);
-                    await File.WriteAllBytesAsync(filePath, bytes);
-                    Console.WriteLine($"Downloaded: {filePath}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Download failed for {url}: {ex.Message}");
-                }
-            }
-        }
+        //        try
+        //        {
+        //            using var client = new HttpClient();
+        //            var bytes = await client.GetByteArrayAsync(url);
+        //            await File.WriteAllBytesAsync(filePath, bytes);
+        //            Console.WriteLine($"Downloaded: {filePath}");
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine($"Download failed for {url}: {ex.Message}");
+        //        }
+        //    }
+        //}
 
-        public static string SanitizeTitle(string title, int maxLength = 100)
-        {
-            string cleaned = Regex.Replace(title, @"[<>:""/\\|?*]", "");
-            cleaned = Regex.Replace(cleaned, @"\s+", " ");
-            cleaned = cleaned.Trim(' ', '.');
-            if (cleaned.Length > maxLength)
-                cleaned = cleaned.Substring(0, maxLength);
-            return cleaned;
-        }
+        //public static string SanitizeTitle(string title, int maxLength = 100)
+        //{
+        //    string cleaned = Regex.Replace(title, @"[<>:""/\\|?*]", "");
+        //    cleaned = Regex.Replace(cleaned, @"\s+", " ");
+        //    cleaned = cleaned.Trim(' ', '.');
+        //    if (cleaned.Length > maxLength)
+        //        cleaned = cleaned.Substring(0, maxLength);
+        //    return cleaned;
+        //}
     }
 }

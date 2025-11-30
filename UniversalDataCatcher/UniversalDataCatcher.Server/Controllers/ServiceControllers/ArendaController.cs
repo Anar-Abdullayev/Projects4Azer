@@ -2,7 +2,7 @@
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
 using UniversalDataCatcher.Server.Services.Arenda.Services;
 
-namespace UniversalDataCatcher.Server.Controllers.Arenda
+namespace UniversalDataCatcher.Server.Controllers.ServiceControllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
-using UniversalDataCatcher.Server.Bots.YeniEmlak.Services;
+using UniversalDataCatcher.Server.Bots.Bina.Services;
+using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 
-namespace UniversalDataCatcher.Server.Controllers.YeniEmlak
+namespace UniversalDataCatcher.Server.Controllers.ServiceControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class YeniemlakController(YeniEmlakService service) : ControllerBase
+    public class BinaController(BinaService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)

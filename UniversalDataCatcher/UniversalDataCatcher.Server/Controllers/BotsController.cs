@@ -6,13 +6,7 @@ using UniversalDataCatcher.Server.Bots.EvTen.Services;
 using UniversalDataCatcher.Server.Bots.Lalafo.Services;
 using UniversalDataCatcher.Server.Bots.Tap.Services;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.Services;
-using UniversalDataCatcher.Server.Controllers.Arenda;
-using UniversalDataCatcher.Server.Controllers.Bina;
-using UniversalDataCatcher.Server.Controllers.Emlak;
-using UniversalDataCatcher.Server.Controllers.EvTen;
-using UniversalDataCatcher.Server.Controllers.Lalafo;
-using UniversalDataCatcher.Server.Controllers.Tap;
-using UniversalDataCatcher.Server.Controllers.YeniEmlak;
+using UniversalDataCatcher.Server.Controllers.ServiceControllers;
 using UniversalDataCatcher.Server.Dtos;
 using UniversalDataCatcher.Server.Services.Arenda.Services;
 

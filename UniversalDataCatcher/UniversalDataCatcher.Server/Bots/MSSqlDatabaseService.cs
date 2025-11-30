@@ -96,6 +96,7 @@ namespace UniversalDataCatcher.Server.Services
                                 updated DATETIME NULL DEFAULT GETDATE(),
                                 sayt NVARCHAR(30) NULL,
                                 sayt_link NVARCHAR(MAX) NULL,
+                                imageUrls NVARCHAR(MAX) NULL,
                                 status INT NULL,
                                 ReferenceId BIGINT NULL
                             );

@@ -41,5 +41,11 @@ namespace UniversalDataCatcher.Server.Services
             var sql = "exec sp_UpdateReferenceIds_Final;";
             await _db.ExecuteAsync(sql);
         }
+
+        public async Task<Advertisement?> GetAsync(int id)
+        {
+            var sqlQuery = $"SELECT * FROM {_tableName} WHERE id = @Id";
+            return await _db.QueryFirstOrDefaultAsync<Advertisement>(sqlQuery, new {Id = id});
+        }
     }
 }

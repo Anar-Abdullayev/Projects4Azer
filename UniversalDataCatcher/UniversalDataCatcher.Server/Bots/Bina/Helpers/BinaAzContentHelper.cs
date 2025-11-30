@@ -75,6 +75,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
             property.OwnerType = DocumentHelper.GetOwnerType(doc);
             property.Post_Type = DocumentHelper.GetPostType(doc);
             property.CreatedAt = DocumentHelper.GetCreationTime(doc);
+            property.ImageUrls = DocumentHelper.GetImageUrls(doc);
 
             return property;
         }

@@ -59,6 +59,18 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             return "";
         }
 
+        public static string GetMainAddress(HtmlNode node)
+        {
+            var addressNodes = node.SelectNodes(".//li/a");
+            var addressTitles = addressNodes.Select(n => n.GetAttributeValue("title", ""));
+            if (addressTitles.Any())
+            {
+                var mainAddress = string.Join(", ", addressTitles);
+                return mainAddress;
+            }
+            return "";
+        }
+
         public static float GetPrice(HtmlNode node)
         {
             var priceNode = node.SelectSingleNode(".//div[contains(@class,'elan_new_price_box')]/p");
@@ -86,6 +98,17 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             ?.Select(a => a.InnerText.Trim())
             .ToList();
             return numbers;
+        }
+
+        public static string? GetImageUrls(HtmlNode node)
+        {
+            var imageLinkNodes = node.SelectNodes(".//ul[contains(@class, 'slides') and contains(@class, 'elan_g_images_list')]/li/a");
+            if (imageLinkNodes != null)
+            {
+                var imageLinks = imageLinkNodes.Select(a => a.GetAttributeValue("href", ""));
+                return string.Join(", ", imageLinks);
+            }
+            return null;
         }
     }
 }

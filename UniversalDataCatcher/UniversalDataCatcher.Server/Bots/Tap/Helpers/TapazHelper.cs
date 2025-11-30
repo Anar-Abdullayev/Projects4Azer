@@ -76,7 +76,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Helpers
             property.Owner = DocumentHelper.GetOwner(doc);
             property.PhoneNumbers = await DocumentHelper.GetPhoneNumbersAsync(advId) ?? "";
             property.OwnerType = await DocumentHelper.GetOwnerType(doc);
-
+            property.ImageUrls = DocumentHelper.GetImageUrls(doc);
             return property;
         }
     }

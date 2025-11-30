@@ -67,6 +67,19 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Models
         [JsonPropertyName("images")]
         public List<Image> Images { get; set; }
 
+        public string? ImageUrls
+        {
+            get
+            {
+                if (Images is not null)
+                {
+                    var imageUrls = Images.Select(image => image.HighQualityUrl);
+                    return string.Join(", ", imageUrls);
+                }
+                return null;
+            }
+        }
+
         [JsonPropertyName("for_sale")]
         public bool ForSale { get; set; }
 

@@ -50,5 +50,6 @@
         public string? Post_Type { get; set; }
         public string? Document { get; set; }
         public string? Repair { get; set; }
+        public string? ImageUrls { get; set; }
     }
 }

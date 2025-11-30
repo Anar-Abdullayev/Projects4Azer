@@ -7,6 +7,7 @@ namespace UniversalDataCatcher.Server.Interfaces
     {
         void SetTable(string tableName);
         Task<IEnumerable<Advertisement>> GetAllAsync(AdvertisementFilter? filter = null);
+        Task<Advertisement?> GetAsync(int id);
         Task<int> CountAsync(AdvertisementFilter? filter);
         Task StartSearchingRepeatedAdverts();
     }

@@ -1,5 +1,4 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { useState } from "react";
 
 function SelectBox({ fieldName, labelText, menuItems, selectedValue, onChange }) {
     const handleChange = (value) => {

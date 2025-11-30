@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
-using UniversalDataCatcher.Server.Bots.Emlak.Services;
+using UniversalDataCatcher.Server.Bots.EvTen.Services;
 
-namespace UniversalDataCatcher.Server.Controllers.Emlak
+namespace UniversalDataCatcher.Server.Controllers.ServiceControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmlakController(EmlakService service) : ControllerBase
+    public class EvTenController(EvTenService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)

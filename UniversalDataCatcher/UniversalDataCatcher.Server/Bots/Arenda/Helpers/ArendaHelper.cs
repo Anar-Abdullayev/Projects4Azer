@@ -87,6 +87,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             var titleSideNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'elan_title_bg')]//div[contains(@class,'elan_title_left')]");
             var leftSideNode = doc.DocumentNode.SelectSingleNode("//section[contains(@class,'elan_desc_sides') and contains(@class,'elan_desc_left_side')]");
             var rightSideNode = doc.DocumentNode.SelectSingleNode("//section[contains(@class,'elan_desc_sides') and contains(@class,'elan_desc_right_side') and contains (@class,'elan_in_right')]");
+            var imageGalleryNode = doc.DocumentNode.SelectSingleNode("//section[@id='elan_gallery']");
 
 
             // Left side
@@ -100,7 +101,8 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             var description = DocumentHelper.GetDescription(leftSideNode);
             var propertyFeatures = DocumentHelper.GetPropertyFeatures(leftSideNode);
             var address = DocumentHelper.GetAddress(leftSideNode);
-
+            var mainAddress = DocumentHelper.GetMainAddress(titleSideNode);
+            var imageUrls = DocumentHelper.GetImageUrls(imageGalleryNode);
 
             // Right side
             var price = DocumentHelper.GetPrice(rightSideNode);
@@ -114,12 +116,13 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             property.PropertySize = propertySize;
             property.Description = description;
             property.PropertyFeatures = propertyFeatures;
-            property.Address = address;
+            property.Address = mainAddress+" "+address;
             property.Poster_Type = owner.Contains("Əmlak sahibi") ? "mülkiyyətçi" : "vasitəçi";
             property.Price = price;
             property.Owner = owner.Replace(" (Əmlak sahibi)", "").Replace(" (Vasitəçi)","");
             property.ContactNumbers = contactNumbers is not null && contactNumbers.Count > 0 ? String.Join(", ", contactNumbers.ToArray()) : "Yoxdur";
             property.ContactNumbers = property.ContactNumbers.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "");
+            property.ImageUrls = imageUrls;
 
             var floorString = property.PropertyMainInfos?.FirstOrDefault(x => x.ToLower().Contains("mərtəbə"));
             if (!string.IsNullOrEmpty(floorString))

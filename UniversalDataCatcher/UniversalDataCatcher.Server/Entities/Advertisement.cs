@@ -30,6 +30,7 @@
         public string? Sayt_Link { get; set; }
         public int? Status { get; set; }
         public int? ReferenceId { get; set; }
+        public string? ImageUrls { get; set; }
 
     }
 }

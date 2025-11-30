@@ -88,6 +88,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
             property.PosterType = DocumentHelper.GetPosterType(doc);
             property.PosterPhone = DocumentHelper.GetPosterPhone(doc);
             property.Renovation = DocumentHelper.GetRenovation(doc);
+            property.ImageUrls = DocumentHelper.GetImageUrls(doc);
 
             return property;
         }

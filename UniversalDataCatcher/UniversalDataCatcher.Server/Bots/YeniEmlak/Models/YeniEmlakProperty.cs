@@ -46,5 +46,6 @@
 
         public string? PosterPhone { get { return _posterPhone; } set { _posterPhone = value; } }
         public string? PostType { get { return _postType == "Satılır" ? "Satış" : _postType; } set { _postType = value; } }
+        public string? ImageUrls { get; set; }
     }
 }

@@ -24,12 +24,12 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 INSERT INTO dbo.{_databaseTableName} (
                     bina_id, main_title, address, poster_note, amount, area, room, poster_phone, poster_name, sayt, 
                     item_id, post_create_date, sayt_link,
-                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type, imageUrls
                 )
 
                 VALUES (
                     @Id, @MainTitle, @Address, @Description, @Price, @Area, @RoomCount, @PhoneNumbers, @Owner, 'TapAz',
-                    @Id, @CreatedAt, @AdvLink, @BuildingType, @Category, null, @AdvType, @LandArea, null, null, @OwnerType
+                    @Id, @CreatedAt, @AdvLink, @BuildingType, @Category, null, @AdvType, @LandArea, null, null, @OwnerType, @ImageUrls
                 );";
             var parameters = new
             {
@@ -48,6 +48,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 record.OwnerType,
                 record.LandArea,
                 record.BuildingType,
+                record.ImageUrls,
                 CreatedAt = record.CreatedAt.ToString(),
             };
             connection.Execute(sqlQuery, parameters);

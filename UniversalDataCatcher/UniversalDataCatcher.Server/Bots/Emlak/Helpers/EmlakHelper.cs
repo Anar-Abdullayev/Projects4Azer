@@ -58,6 +58,7 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Helpers
             property.PosterPhone = EmlakDocumentHelper.GetPosterPhone();
             property.PosterType = EmlakDocumentHelper.GetPosterType();
             property.Address = EmlakDocumentHelper.GetAddress();
+            property.ImageUrls = EmlakDocumentHelper.GetImageUrls();
 
             string? area = EmlakDocumentHelper.GetTechnicalCharacteristic("Sahə");
             if (area is not null)

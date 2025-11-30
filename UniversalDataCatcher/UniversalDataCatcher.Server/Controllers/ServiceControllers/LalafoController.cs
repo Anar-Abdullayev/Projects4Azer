@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
-using UniversalDataCatcher.Server.Bots.EvTen.Services;
+using UniversalDataCatcher.Server.Bots.Lalafo.Services;
+using UniversalDataCatcher.Server.Services.Arenda.Services;
 
-namespace UniversalDataCatcher.Server.Controllers.EvTen
+namespace UniversalDataCatcher.Server.Controllers.ServiceControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EvTenController(EvTenService service) : ControllerBase
+    public class LalafoController(LalafoService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)

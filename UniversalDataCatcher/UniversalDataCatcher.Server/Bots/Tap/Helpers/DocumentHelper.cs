@@ -63,11 +63,13 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Helpers
             return propertyPriceNode.SelectSingleNode("//span[contains(@class, 'price-val')]").InnerText.Trim() + " " + propertyPriceNode.SelectSingleNode("//span[contains(@class, 'price-cur')]").InnerText.Trim();
         }
 
-        public static string GetOwner(HtmlDocument doc)
+        public static string? GetOwner(HtmlDocument doc)
         {
             var ownerNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'product-owner__info-name')]");
             if (ownerNode is null)
                 ownerNode = doc.DocumentNode.SelectSingleNode("//span[contains(@class, 'product-shop__owner-name')]");
+            if (ownerNode is null)
+                return null;
             return ownerNode.InnerText.Trim();
         }
 
@@ -145,6 +147,19 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Helpers
                     return null;
                 }
             }
+        }
+
+        public static string? GetImageUrls(HtmlDocument doc)
+        {
+            var imageNodes = doc.DocumentNode.SelectNodes("//div[contains(@class, 'js-fotorama')]/a");
+
+
+            if (imageNodes != null)
+            {
+                var images = imageNodes.Select(node => node.GetAttributeValue("href", ""));
+                return string.Join(", ", images);
+            }
+            return null;
         }
 
         public static string GetNextPageUrl(HtmlDocument doc)

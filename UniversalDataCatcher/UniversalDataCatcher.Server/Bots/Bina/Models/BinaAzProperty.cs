@@ -2,7 +2,6 @@
 {
     public class BinaAzProperty
     {
-        private string _advType;
         private string? _area;
         private string? _landArea;
         private string? _floor;
@@ -50,6 +49,7 @@
         public string? Post_Type { get; set; }
         public string? CreatedAt { get; set; }
         public DateTime? UpdatedTime { get; set; } // updated
+        public string? ImageUrls { get; set; }
 
     }
 }

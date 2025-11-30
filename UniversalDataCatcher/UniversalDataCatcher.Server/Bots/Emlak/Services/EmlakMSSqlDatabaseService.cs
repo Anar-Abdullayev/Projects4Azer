@@ -25,12 +25,12 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                 INSERT INTO dbo.{_databaseTableName} (
                     bina_id, main_title, address, poster_note, amount, area, room, poster_phone, poster_name, sayt, 
                     item_id, post_create_date, sayt_link,
-                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type, imageUrls
                 )
 
                 VALUES (
                     @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PosterPhone, @PosterName, 'Emlak',
-                    @Id, @CreatedAt, @AdvLink, null, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType
+                    @Id, @CreatedAt, @AdvLink, null, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType, @ImageUrls
                 );";
             var parameters = new
             {
@@ -51,7 +51,8 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                 record.Document,
                 record.LandArea,
                 record.Category,
-                record.MainTitle
+                record.MainTitle,
+                record.ImageUrls
             };
             connection.Execute(sqlQuery, parameters);
         }

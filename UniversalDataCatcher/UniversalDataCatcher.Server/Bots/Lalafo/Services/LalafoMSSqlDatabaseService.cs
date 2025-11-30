@@ -35,13 +35,19 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 INSERT INTO dbo.{_tableName} (
                     bina_id, main_title, address, poster_note, amount, area, room, poster_phone, poster_name, sayt, 
                     item_id, post_create_date, sayt_link,
-                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type
+                    binatype, category, floor, post_tip, torpaqarea, document, renovation, poster_type, imageUrls
                 )
                 VALUES (
                     @Id, @Title, @Address, @Description, @Price, @PropertyArea, @RoomCount, @Mobile, @Username, 'LalafoAz', 
-                    @Id, @CreatedTime, @Url, @BuildingType, @Category, @Floor, @Post_Type, @LandArea, @Document, @Repair, @Poster_Type
+                    @Id, @CreatedTime, @Url, @BuildingType, @Category, @Floor, @Post_Type, @LandArea, @Document, @Repair, @Poster_Type, @ImageUrls
                 );";
 
+            var imageUrls = record.Images.Select(x => x.OriginalUrl);
+            string imageUrlsString = null;
+            if (imageUrls.Any())
+            {
+                imageUrlsString = string.Join(", ", imageUrls);
+            }
             
             var parameters = new
             {
@@ -63,6 +69,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 record.Document,
                 record.Repair,
                 record.Poster_Type,
+                ImageUrls = imageUrlsString,
                 CreatedTime = DateTimeOffset.FromUnixTimeSeconds(record.CreatedTime).ToString(),
             };
 

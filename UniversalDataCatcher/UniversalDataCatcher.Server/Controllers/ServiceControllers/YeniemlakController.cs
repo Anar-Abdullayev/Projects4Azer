@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using UniversalDataCatcher.Server.Bots.Arenda.DTOs;
-using UniversalDataCatcher.Server.Bots.Lalafo.Services;
-using UniversalDataCatcher.Server.Bots.Tap.Services;
+using UniversalDataCatcher.Server.Bots.YeniEmlak.Services;
 
-namespace UniversalDataCatcher.Server.Controllers.Tap
+namespace UniversalDataCatcher.Server.Controllers.ServiceControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TapController(TapAzService service) : ControllerBase
+    public class YeniemlakController(YeniEmlakService service) : ControllerBase
     {
         [HttpPost("start")]
         public ActionResult Start([FromBody] StartBotRequestDto request)

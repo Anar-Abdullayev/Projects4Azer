@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System.Xml.Linq;
+using UniversalDataCatcher.Server.Bots.Emlak.StaticConstants;
 
 namespace UniversalDataCatcher.Server.Bots.Emlak.Helpers
 {
@@ -84,6 +85,17 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Helpers
             var addressNode = doc.DocumentNode.SelectSingleNode("//div[@class='map-address']/h4");
             var address = addressNode?.InnerText;
             return address;
+        }
+        public static string? GetImageUrls()
+        {
+            var imgNodes = doc.DocumentNode.SelectNodes("//div[@class = 'fotorama']//img");
+
+            if (imgNodes != null)
+            {
+                var imageUrls = imgNodes.Select(node => EmlakConstants.HostUrl + node.GetAttributeValue("src", ""));
+                return string.Join(", ", imageUrls);
+            }
+            return null;
         }
     }
 }

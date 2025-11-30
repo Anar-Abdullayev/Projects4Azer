@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
 using System.Globalization;
 using System.Text.Json;
 using UniversalDataCatcher.Server.Bots.Bina.Models;
@@ -101,6 +102,30 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
             DateTime createdAt = DateTime.ParseExact(createdAtString, "dd.MM.yyyy, HH:mm",
                                                 CultureInfo.InvariantCulture);
             return createdAt.ToString();
+        }
+
+        public static string? GetImageUrls(HtmlDocument doc)
+        {
+
+            var script = doc.DocumentNode
+    .SelectSingleNode("//script[@type='application/ld+json']");
+
+            if (script != null)
+            {
+                // 3. Parse JSON content
+                var json = JArray.Parse(script.InnerText);
+
+                // 4. Find product object
+                var product = json.FirstOrDefault(x => x["@type"]?.ToString() == "Product");
+
+                if (product != null)
+                {
+                    var images = product["image"].ToObject<List<string>>();
+                    var imageUrls = string.Join(", ", images);
+                    return imageUrls;
+                }
+            }
+            return null;
         }
 
         public static async Task<string?> GetPhoneNumbersAsync(string advId)
