@@ -1,79 +1,8 @@
 import { Button, Checkbox, FormControlLabel, Switch } from "@mui/material";
 import SelectBox from "../Combobox/SelectBox";
 import { useState } from "react";
-const categoryItems = [
-  "Həyət evi",
-  "Mənzil",
-  "Obyekt",
-  "Ofis",
-  "Qaraj",
-  "Torpaq",
-  "Digər",
-];
-const buildingTypes = ["Köhnə tikili", "Yeni tikili"];
-const advTypes = ["Satış", "Kirayə"];
-const sellerTypes = ["Mülkiyyətçi", "Vasitəçi"];
-const regions = [
-  "Ağcabədi",
-  "Ağdaş",
-  "Ağstafa",
-  "Ağsu",
-  "Astara",
-  "Abşeron",
-  "Bakı",
-  "Balakən",
-  "Beyləqan",
-  "Biləsuvar",
-  "Bərdə",
-  "Cəlilabad",
-  "Daşkəsən",
-  "Füzuli",
-  "Goranboy",
-  "Göyçay",
-  "Göygöl",
-  "Gədəbəy",
-  "Gəncə",
-  "Hacıqabul",
-  "İmişli",
-  "İsmayıllı",
-  "Kürdəmir",
-  "Lerik",
-  "Lənkəran",
-  "Masallı",
-  "Mingəçevir",
-  "Naftalan",
-  "Naxçıvan",
-  "Neftçala",
-  "Oğuz",
-  "Qax",
-  "Qazax",
-  "Qobustan",
-  "Quba",
-  "Qusar",
-  "Qəbələ",
-  "Saatlı",
-  "Sabirabad",
-  "Şabran",
-  "Salyan",
-  "Şamaxı",
-  "Samux",
-  "Şirvan",
-  "Siyəzən",
-  "Sumqayıt",
-  "Şəki",
-  "Şəmkir",
-  "Tovuz",
-  "Tərtər",
-  "Ucar",
-  "Xaçmaz",
-  "Xırdalan",
-  "Xızı",
-  "Xudat",
-  "Yardımlı",
-  "Yevlax",
-  "Zaqatala",
-  "Zərdab",
-];
+import { advTypes, buildingTypes, categoryItems, regions, sellerTypes } from "../../utils/constants";
+
 function Filters({filters, onSearch, onFilterChange}) {
     const handleValueChange = (field, value) => {
         onFilterChange(field, value);
