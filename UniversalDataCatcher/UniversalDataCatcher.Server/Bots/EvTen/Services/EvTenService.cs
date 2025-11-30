@@ -52,6 +52,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             int row = 1;
                             foreach (var objJson in objects)
                             {
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 logger.Information($"{row++}/{objects.Count} ({page} page) Starting process");
                                 string cleaned = Regex.Unescape(objJson);
                                 if (cleaned.Contains(""))
@@ -98,6 +99,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 if (detailedItem.Description == "$3b")
                                     detailedItem.Description = DocumentHelper.GetDescriptionFromMergedString(merged);
                                 detailedItem.HasIpoteka = DocumentHelper.HasIpotekaInfo(detailedHtmlString);
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 _databaseService.InsertRecord(detailedItem);
                                 Progress++;
                                 logger.Information($"Advertisement Id: {detailedItem.Id} has been inserted successfully");

@@ -67,6 +67,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                         property.Id = propertyNode.Item1;
                                         property.Link = propertyNode.Item2;
                                         property.Created_At = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
+                                        CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                         databaseService.InsertRecord(property);
                                         Progress++;
                                         await Task.Delay(TimeSpan.FromSeconds(1), CancellationTokenSource.Token);

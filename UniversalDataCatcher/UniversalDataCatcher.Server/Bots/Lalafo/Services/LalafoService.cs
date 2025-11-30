@@ -43,6 +43,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             var outDateCount = 0;
                             foreach (var item in items)
                             {
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 logger.Information($"{itemPosition++}/{items.Count} ({page} page)");
                                 if (databaseService.FindById(item.Id) != null)
                                 {
@@ -60,6 +61,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
 
                                 var propertyDetails = await LalafoHelper.FetchDetailsPageAsync(cookies, item.Id);
                                 propertyDetails.Ad_Label = item.Ad_Label;
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 databaseService.InsertRecord(propertyDetails);
                                 Progress++;
                                 await Task.Delay(1000, CancellationTokenSource.Token);

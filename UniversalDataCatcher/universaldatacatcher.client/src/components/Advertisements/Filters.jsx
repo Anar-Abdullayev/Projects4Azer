@@ -74,15 +74,14 @@ const regions = [
   "Zaqatala",
   "Zərdab",
 ];
-function Filters({onSearch}) {
-    const [filters, setFilters] = useState({});
+function Filters({filters, onSearch, onFilterChange}) {
     const handleValueChange = (field, value) => {
-        setFilters((prev) => ({...prev, [field]: value}));
+        onFilterChange(field, value);
     }
+    
     const handleSearchClick = () => {
         onSearch(filters);
     }
-    console.log(filters)
   return (
     <div className="bg-gray-100 p-4 rounded-2xl mb-5">
       <div className="flex justify-between gap-5">

@@ -57,7 +57,7 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                                 logger.Information($"{row++}/{advItems.Count} ({page} page) Starting process");
                                 var initialInfo = EmlakHelper.GetInitialInfosFromNode(item);
                                 var id = initialInfo.Item1;
-                                var advLink = EmlakConstants.HostUrl+initialInfo.Item2;
+                                var advLink = EmlakConstants.HostUrl + initialInfo.Item2;
                                 logger.Information($"Processing link: {advLink}");
                                 if (databaseService.FindById(int.Parse(id)) is not null)
                                 {
@@ -84,9 +84,10 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                                         continue;
                                     }
                                 }
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 databaseService.InsertRecord(property);
                                 logger.Information($"{id} has been inserted successfully");
-                                Progress++;    
+                                Progress++;
                                 await Task.Delay(700, CancellationTokenSource.Token);
                             }
                             if (oldContentCount == advItems.Count)

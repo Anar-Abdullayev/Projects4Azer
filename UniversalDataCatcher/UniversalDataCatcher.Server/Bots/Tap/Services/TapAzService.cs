@@ -56,6 +56,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                     int row = 1;
                                     foreach (var propertyNode in propertyNodes)
                                     {
+                                        CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                         logger.Information($"{row++}/{propertyNodes.Count} ({page} page)");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1));
                                         if (existingRecord != null)
@@ -71,6 +72,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                         property.Id = int.Parse(propertyNode.Item1);
                                         property.AdvLink = Constants.BaseUrl + propertyNode.Item2;
                                         property.CreatedAt = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
+                                        CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                         databaseService.InsertRecord(property);
                                         logger.Information("Yeni elan tapıldı və məlumat bazasına əlavə edildi:");
                                         Progress++;
@@ -79,7 +81,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                 }
                             }
                             page++;
-                            await Task.Delay(TimeSpan.FromSeconds(0.5),CancellationTokenSource.Token);
+                            await Task.Delay(TimeSpan.FromSeconds(0.5), CancellationTokenSource.Token);
                         }
                         logger.Information($"Gözləmə rejimində... Növbəti yoxlama {repeatEvery} dəqiqədən sonra baş tutacaq.");
                         SleepTime = DateTime.Now;

@@ -55,6 +55,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                             int currentItem = 1;
                             foreach (var item in dataPage.Data.ItemsConnection.Edges)
                             {
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 logger.Information($"{currentItem++}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} page) Starting process");
                                 var property = item.Node.GetInitialProperty();
                                 if (property.UpdatedTime < endDate)
@@ -85,6 +86,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                                     goto TryGettingDetails;
                                 }
                                 var contentProperty = await helper.GetPropertyFromRawHTML(htmlString, property);
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 database.InsertRecord(contentProperty);
                                 Progress++;
                                 await Task.Delay(500, CancellationTokenSource.Token);

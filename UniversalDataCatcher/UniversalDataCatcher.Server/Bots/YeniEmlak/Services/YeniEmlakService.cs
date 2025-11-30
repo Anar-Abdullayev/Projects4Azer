@@ -49,6 +49,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                             var row = 1;
                             foreach (var item in advItems)
                             {
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 var mainInfos = YeniEmlakHelper.GetMainInfosFromAdvItemNode(item);
                                 var itemId = mainInfos.Item1;
                                 var itemDate = DateTime.ParseExact(mainInfos.Item2, "dd.MM.yyyy", null);
@@ -72,6 +73,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 var property = YeniEmlakHelper.GetPropertyFromDocument(detailHtmlDocument);
                                 property.Id = int.Parse(itemId);
                                 property.AdvLink = itemLink;
+                                CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 databaseService.InsertRecord(property);
                                 Progress++;
                                 logger.Information($"Item Id with {item.Id} inserted successfully");

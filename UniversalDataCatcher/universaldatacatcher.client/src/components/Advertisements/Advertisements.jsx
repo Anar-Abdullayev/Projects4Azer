@@ -6,6 +6,7 @@ import axios from "axios";
 function Advertisements() {
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
+  const [filters, setFilters] = useState({});
   useEffect(() => {
     async function fetchData() {
       const response = await axios.post("/api/posts", {
@@ -19,7 +20,7 @@ function Advertisements() {
     fetchData();
   }, []);
 
-  const handleFilterSearch = async (filters) => {
+  const handleFilterSearch = async () => {
     const body = {
       page: 1,
       pageSize: 50,
@@ -32,10 +33,13 @@ function Advertisements() {
     setData(jsonData);
   };
 
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({...prev, [field]: value}));
+  }
   return (
     <div className="w-full p-5 mb-3 rounded-2xl shadow-xl bg-white">
-      <Filters onSearch={handleFilterSearch} />
-      <AdvertisementList rows={data} totalRows={totalRows} />
+      <Filters filters={filters} onSearch={handleFilterSearch} onFilterChange={handleFilterChange} />
+      <AdvertisementList rows={data} totalRows={totalRows} onRefresh={handleFilterSearch}/>
     </div>
   );
 }
