@@ -49,8 +49,14 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
             var data = JsonSerializer.Deserialize<BinaAzResponseRoot>(apiBody);
             if (data is null)
                 goto TryAgain;
-            if (data is not null && data.Data.ItemsConnection != null)
+            if (data.Data.ItemsConnection != null)
             {
+                if (data.Data is null)
+                    goto TryAgain;
+                if (data.Data.ItemsConnection is null)
+                    goto TryAgain;
+                if (data.Data.ItemsConnection.PageInfo is null)
+                    goto TryAgain;
                 if (data.Data.ItemsConnection.PageInfo.HasNextPage)
                 {
                     queryParams.variables.cursor = data.Data.ItemsConnection.PageInfo.EndCursor;

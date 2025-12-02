@@ -42,7 +42,23 @@
         public string? Price { get; set; } // amount
         public string? Currency { get; set; } // currency
         public string? Owner { get; set; } // poster_name
-        public string? OwnerType { get { return _ownerType is null ? null : _ownerType == "" ? "vasitəçi" : _ownerType?.Replace(" (agent)", ""); } set { _ownerType = value; } } // poster_type
+        public string? OwnerType
+        {
+            get
+            {
+                if (_ownerType is null)
+                    return null;
+                if (_ownerType.StartsWith("mülkiyyətçi"))
+                    return "mülkiyyətçi";
+                if (_ownerType.StartsWith("vasitəçi"))
+                    return "vasitəçi";
+                if (_ownerType.StartsWith("Yaşayış kompleksi"))    
+                    return "vasitəçi";
+                return _ownerType;
+            }
+            set { _ownerType = value; }
+        } // poster_type
+        //public string? OwnerType { get { return _ownerType is null ? null : _ownerType == "" ? "vasitəçi" : _ownerType?.Replace(" (agent)", ""); } set { _ownerType = value; } } // poster_type
         public string? PhoneNumbers { get { return _phoneNumbers?.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", ""); } set { _phoneNumbers = value; } }
         public string? Description { get; set; } // poster_note
         public string AdvLink { get; set; } // sayt_link

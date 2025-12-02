@@ -73,6 +73,8 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
         {
             var ownerTypeNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'product-owner__info-region')]");
             var ownerType = "";
+            if (ownerTypeNode is null)
+                ownerTypeNode = doc.DocumentNode.SelectSingleNode("//div[contains(@class, 'product-owner__residence-info-region')]");
             if (ownerTypeNode is not null)
                 ownerType = ownerTypeNode.InnerText.Trim();
             return ownerType;
