@@ -95,7 +95,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
             return postType;
         }
 
-        public static string GetCreationTime(HtmlDocument doc)
+        public static DateTime GetCreationTime(HtmlDocument doc)
         {
             var creationTimeNode = doc.DocumentNode.SelectNodes("//span[contains(@class, 'product-statistics__i-text')]");
             var createdAtString = "";
@@ -103,7 +103,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
                 createdAtString = creationTimeNode[1].InnerText.Trim().Replace("Yeniləndi: ", "");
             DateTime createdAt = DateTime.ParseExact(createdAtString, "dd.MM.yyyy, HH:mm",
                                                 CultureInfo.InvariantCulture);
-            return createdAt.ToString();
+            return createdAt;
         }
 
         public static string? GetImageUrls(HtmlDocument doc)

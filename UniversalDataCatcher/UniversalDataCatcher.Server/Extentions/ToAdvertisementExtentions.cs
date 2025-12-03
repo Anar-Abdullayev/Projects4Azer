@@ -27,7 +27,7 @@ namespace UniversalDataCatcher.Server.Extentions
             adv.Post_Tip = details.PostType;
             adv.Poster_Type = details.PosterType;
             adv.Poster_Phone = details.PhoneNumber;
-            adv.Post_Create_Date = details.CreatedAt.ToString();
+            adv.Post_Create_Date = details.CreatedAt;
             adv.InsertDate = DateTime.Now;
             adv.Updated = DateTime.Now;
             adv.Sayt = "Ev10";

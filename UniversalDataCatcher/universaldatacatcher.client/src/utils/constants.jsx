@@ -40,6 +40,16 @@ export const columns = [
     sortable: false,
   },
   {
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    editable: false,
+    sortable: false,
+    renderCell: (params) => (
+      <span>{params.row.status ? 'Kopyalandı' : ''}</span>
+    )
+  },
+  {
     field: "actions",
     headerName: "Əməliyyatlar",
     flex: 1,

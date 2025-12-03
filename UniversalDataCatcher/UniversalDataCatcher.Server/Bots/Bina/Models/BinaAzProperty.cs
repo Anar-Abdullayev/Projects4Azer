@@ -63,7 +63,7 @@
         public string? Description { get; set; } // poster_note
         public string AdvLink { get; set; } // sayt_link
         public string? Post_Type { get; set; }
-        public string? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedTime { get; set; } // updated
         public string? ImageUrls { get; set; }
 

@@ -50,8 +50,8 @@ function HomePage() {
         aria-label="Vertical tabs example"
         sx={{ borderRight: 1, borderColor: "divider" }}
       >
-        <Tab label="Elanlar" {...a11yProps(0)} />
-        <Tab label="Servislər" {...a11yProps(1)} />
+        <Tab label="ELANLAR" {...a11yProps(0)} />
+        <Tab label="SERVİSLƏR" {...a11yProps(1)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <Advertisements />

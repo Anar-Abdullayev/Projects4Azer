@@ -9,7 +9,6 @@ let interval = null;
 
 function ServicesList() {
   const [services, setServices] = useState([]);
-  const [isLoadingServices, setIsLoadingServices] = useState([]);
   const fetchServices = useCallback(async () => {
     const response = await axios.get("/api/bots/status");
     setServices(response.data);
@@ -29,19 +28,6 @@ function ServicesList() {
       interval = null;
     };
   }, []);
-  const handleServiceClick = async (serviceName) => {
-    const service = services.find((s) => s.serviceName === serviceName);
-    console.log("Service clicked:", service.serviceName);
-    if (service.isRunning) {
-      await axios.post(`/api/${service.serviceName}/stop`);
-    } else {
-      await axios.post(`/api/${service.serviceName}/start`, {
-        dayDifference: 1,
-        repeatEveryMinutes: 30,
-      });
-    }
-
-  };
 
   return (
     <div>
@@ -50,7 +36,6 @@ function ServicesList() {
           <ServiceCard
             key={service.serviceName}
             service={service}
-            onClick={handleServiceClick}
           />
         ))}
       </div>

@@ -1,8 +1,9 @@
-import { Button, ButtonBase, Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useCallback, useMemo } from "react";
 import { columns } from "../../utils/constants.jsx";
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 function AdvertisementList({ rows, totalRows, onRefresh }) {
   const [selectedIds, setSelectedIds] = useState({});
@@ -16,7 +17,7 @@ function AdvertisementList({ rows, totalRows, onRefresh }) {
   };
 
   const selectedRowsCount = calculateSelectedRowsCount();
-  const handleCopy = () => {
+  const handleCopy = async () => {
     let selectedRows = [];
     if (selectedIds.type === "include") {
       selectedRows = rows.filter((row) => selectedIds.ids.has(row.id));
@@ -35,11 +36,16 @@ function AdvertisementList({ rows, totalRows, onRefresh }) {
     navigator.clipboard
       .writeText(tableText)
       .then(() => {
-        alert("Kopyalandı!");
+        toast.success("Seçilmiş elanların məlumatları kopyalandı!", {
+          position: "bottom-right",
+          autoClose: 1500,
+        });
       })
       .catch((err) => {
         console.error("Kopyalama uğursuz oldu: ", err);
       });
+    const postIds = selectedRows.map((row) => row.id);
+    await axios.post("/api/posts/copy", { copiedPosts: postIds });
   };
 
   return (
@@ -48,7 +54,7 @@ function AdvertisementList({ rows, totalRows, onRefresh }) {
         <Typography>Ümumi say: {totalRows}</Typography>
         <Typography>Seçilmişlərin sayı: {selectedRowsCount}</Typography>
         <Button size="small" variant="contained" onClick={onRefresh}>
-          Yenilə
+          YENİLƏ
         </Button>
         {selectedRowsCount > 0 && (
           <Button
@@ -57,7 +63,7 @@ function AdvertisementList({ rows, totalRows, onRefresh }) {
             color="info"
             onClick={handleCopy}
           >
-            Kopyala
+            KOPYALA
           </Button>
         )}
       </div>

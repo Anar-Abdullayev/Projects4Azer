@@ -91,7 +91,7 @@ namespace UniversalDataCatcher.Server.Services
                                 post_tip NVARCHAR(MAX) NULL,
                                 poster_type NVARCHAR(MAX) NULL,
                                 poster_phone VARCHAR(255) NULL,
-                                post_create_date VARCHAR(255) NULL,
+                                post_create_date DATETIME NULL,
                                 insertdate DATETIME NULL DEFAULT GETDATE(),
                                 updated DATETIME NULL DEFAULT GETDATE(),
                                 sayt NVARCHAR(30) NULL,

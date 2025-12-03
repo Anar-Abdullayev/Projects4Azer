@@ -1,6 +1,9 @@
 import { Button } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
+import DownloadForOfflineOutlinedIcon from '@mui/icons-material/DownloadForOfflineOutlined';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 export default function DownloadImageButton({ postId }) {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -18,7 +21,7 @@ export default function DownloadImageButton({ postId }) {
       size="small"
       style={{ marginRight: 16 }}
     >
-      {isDownloading ? "YÜKLƏNİR..." : "YÜKLƏ"}
+      {isDownloading ? <CircularProgress size={24}/> : <DownloadForOfflineOutlinedIcon />}
     </Button>
   );
 }

@@ -35,17 +35,21 @@ namespace UniversalDataCatcher.Server.Services
             sql += $" ORDER BY id DESC OFFSET {(filter.Page-1)*filter.PageSize} ROWS FETCH NEXT {filter.PageSize} ROWS ONLY";
             return await _db.QueryAsync<Advertisement>(sql, wherePart.Item2);
         }
-
         public async Task StartSearchingRepeatedAdverts()
         {
             var sql = "exec sp_UpdateReferenceIds_Final;";
             await _db.ExecuteAsync(sql);
         }
-
         public async Task<Advertisement?> GetAsync(int id)
         {
             var sqlQuery = $"SELECT * FROM {_tableName} WHERE id = @Id";
             return await _db.QueryFirstOrDefaultAsync<Advertisement>(sqlQuery, new {Id = id});
+        }
+        public async Task SetPostsCopyDate(List<int> postIds)
+        {
+            string ids = string.Join(",", postIds);
+            string query = $"UPDATE {_tableName} SET status = @Date WHERE id in ({ids})";
+            await _db.ExecuteAsync(query, new { Date = DateTime.Now });
         }
     }
 }

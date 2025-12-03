@@ -55,5 +55,14 @@ namespace UniversalDataCatcher.Server.Controllers
 
             return Ok();
         }
+
+        [HttpPost("copy")]
+        public async Task<ActionResult> SetCopiedPosts([FromBody] CopiedItemsRequestDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("At least one post must be sent inside array");
+            await _advertisementService.SetPostsCopyDate(request.CopiedPosts);
+            return Ok();
+        }
     }
 }

@@ -79,7 +79,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 record.ImageUrls,
                 PropertyFeatures = record.PropertyFeatures != null ? JsonSerializer.Serialize(record.PropertyFeatures) : null,
                 PropertyMainInfos = record.PropertyMainInfos != null ? JsonSerializer.Serialize(record.PropertyMainInfos) : null,
-                Created_At = record.Created_At.ToString(),
+                record.Created_At
             };
 
             connection.Execute(sqlQuery, parameters);

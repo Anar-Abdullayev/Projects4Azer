@@ -31,7 +31,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 
                 VALUES (
                     @Id, @MainTitle, @Address, @Description, @Price, @Area, @Rooms, @PhoneNumber, @OwnerName, 'Ev10',
-                    @Id, @CreatedAt, @AdvLink, @BinaType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType, @Ipoteka, @ImageUrls
+                    @Id, @RenewedAt, @AdvLink, @BinaType, @Category, @Floor, @PostType, @LandArea, @Document, @Renovation, @PosterType, @Ipoteka, @ImageUrls
                 );";
 
            
@@ -45,7 +45,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                 record.Rooms,
                 record.PhoneNumber,
                 record.OwnerName,
-                CreatedAt = record.RenewedAt.ToString(),
+                record.RenewedAt,
                 record.AdvLink,
                 record.PropertyType,
                 record.Floor,

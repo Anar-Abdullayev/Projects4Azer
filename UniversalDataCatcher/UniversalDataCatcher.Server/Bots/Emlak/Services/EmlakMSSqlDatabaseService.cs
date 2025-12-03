@@ -42,7 +42,7 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                 record.Rooms,
                 record.PosterPhone,
                 record.PosterName,
-                CreatedAt = record.CreatedAt.ToString(),
+                record.CreatedAt,
                 record.AdvLink,
                 Floor = record.ApartmentFloor is not null ? record.ApartmentFloor : record.Floor is not null ? record.Floor : null,
                 record.PosterType,

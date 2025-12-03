@@ -49,7 +49,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                 record.LandArea,
                 record.BuildingType,
                 record.ImageUrls,
-                CreatedAt = record.CreatedAt.ToString(),
+                record.CreatedAt,
             };
             connection.Execute(sqlQuery, parameters);
         }

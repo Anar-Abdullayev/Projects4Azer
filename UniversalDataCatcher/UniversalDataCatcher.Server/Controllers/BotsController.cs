@@ -27,21 +27,21 @@ namespace UniversalDataCatcher.Server.Controllers
         [HttpGet("status")]
         public async Task<ActionResult> GetStatus()
         {
-            List<StatusResponse> statusResponses = new();
+            List<BotStatusResponse> statusResponses = new();
 
-            statusResponses.Add(new StatusResponse { IsRunning = arendaService.IsRunning, Progress = arendaService.Progress, RepeatEvery = arendaService.RepeatEvery, SleepTime = arendaService.SleepTime, ServiceName = nameof(ArendaController).Replace("Controller", "").ToLower(), ServiceLabelName = "Arenda.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = arendaService.IsRunning, Progress = arendaService.Progress, RepeatEvery = arendaService.RepeatEvery, SleepTime = arendaService.SleepTime, ServiceName = nameof(ArendaController).Replace("Controller", "").ToLower(), ServiceLabelName = "Arenda.az" });
 
-            statusResponses.Add(new StatusResponse { IsRunning = tapAzService.IsRunning, Progress = tapAzService.Progress, RepeatEvery = tapAzService.RepeatEvery, SleepTime = tapAzService.SleepTime, ServiceName = nameof(TapController).Replace("Controller", "").ToLower(), ServiceLabelName = "Tap.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = tapAzService.IsRunning, Progress = tapAzService.Progress, RepeatEvery = tapAzService.RepeatEvery, SleepTime = tapAzService.SleepTime, ServiceName = nameof(TapController).Replace("Controller", "").ToLower(), ServiceLabelName = "Tap.az" });
 
-            statusResponses.Add(new StatusResponse { IsRunning = binaService.IsRunning, Progress = binaService.Progress, RepeatEvery = binaService.RepeatEvery, SleepTime = binaService.SleepTime, ServiceName = nameof(BinaController).Replace("Controller", "").ToLower(), ServiceLabelName = "Bina.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = binaService.IsRunning, Progress = binaService.Progress, RepeatEvery = binaService.RepeatEvery, SleepTime = binaService.SleepTime, ServiceName = nameof(BinaController).Replace("Controller", "").ToLower(), ServiceLabelName = "Bina.az" });
 
-            statusResponses.Add(new StatusResponse { IsRunning = emlakService.IsRunning, Progress = emlakService.Progress, RepeatEvery = emlakService.RepeatEvery, SleepTime = emlakService.SleepTime, ServiceName = nameof(EmlakController).Replace("Controller", "").ToLower(), ServiceLabelName = "Emlak.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = emlakService.IsRunning, Progress = emlakService.Progress, RepeatEvery = emlakService.RepeatEvery, SleepTime = emlakService.SleepTime, ServiceName = nameof(EmlakController).Replace("Controller", "").ToLower(), ServiceLabelName = "Emlak.az" });
 
-            statusResponses.Add(new StatusResponse { IsRunning = evTenService.IsRunning, Progress = evTenService.Progress, RepeatEvery = evTenService.RepeatEvery, SleepTime = evTenService.SleepTime, ServiceName = nameof(EvTenController).Replace("Controller", "").ToLower(), ServiceLabelName = "Ev10.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = evTenService.IsRunning, Progress = evTenService.Progress, RepeatEvery = evTenService.RepeatEvery, SleepTime = evTenService.SleepTime, ServiceName = nameof(EvTenController).Replace("Controller", "").ToLower(), ServiceLabelName = "Ev10.az" });
 
-            statusResponses.Add(new StatusResponse { IsRunning = lalafoService.IsRunning, Progress = lalafoService.Progress, RepeatEvery = lalafoService.RepeatEvery, SleepTime = lalafoService.SleepTime, ServiceName = nameof(LalafoController).Replace("Controller", "").ToLower(), ServiceLabelName = "Lalafo.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = lalafoService.IsRunning, Progress = lalafoService.Progress, RepeatEvery = lalafoService.RepeatEvery, SleepTime = lalafoService.SleepTime, ServiceName = nameof(LalafoController).Replace("Controller", "").ToLower(), ServiceLabelName = "Lalafo.az" });
 
-            statusResponses.Add(new StatusResponse { IsRunning = yeniEmlakService.IsRunning, Progress = yeniEmlakService.Progress, RepeatEvery = yeniEmlakService.RepeatEvery, SleepTime = yeniEmlakService.SleepTime, ServiceName = nameof(YeniemlakController).Replace("Controller", "").ToLower(), ServiceLabelName = "YeniEmlak.az" });
+            statusResponses.Add(new BotStatusResponse { IsRunning = yeniEmlakService.IsRunning, Progress = yeniEmlakService.Progress, RepeatEvery = yeniEmlakService.RepeatEvery, SleepTime = yeniEmlakService.SleepTime, ServiceName = nameof(YeniemlakController).Replace("Controller", "").ToLower(), ServiceLabelName = "YeniEmlak.az" });
 
             return Ok(statusResponses);
         }

@@ -70,7 +70,7 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                 record.Repair,
                 record.Poster_Type,
                 ImageUrls = imageUrlsString,
-                CreatedTime = DateTimeOffset.FromUnixTimeSeconds(record.CreatedTime).ToString(),
+                CreatedTime = DateTimeOffset.FromUnixTimeSeconds(record.CreatedTime),
             };
 
             connection.Execute(sqlQuery, parameters);

@@ -1,6 +1,6 @@
 ﻿namespace UniversalDataCatcher.Server.Dtos
 {
-    public class StatusResponse
+    public class BotStatusResponse
     {
         public string ServiceName { get; set; }
         public string ServiceLabelName { get; set; }

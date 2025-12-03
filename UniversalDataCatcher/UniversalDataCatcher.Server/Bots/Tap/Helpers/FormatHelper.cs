@@ -4,7 +4,7 @@
     {
         private static string[] months = {
                 "yanvar", "fevral", "mart", "aprel", "may", "iyun",
-                "iyul", "avqust", "sentyabr", "oktyabr", "dekabr"
+                "iyul", "avqust", "sentyabr", "oktyabr", "noyabr", "dekabr"
             };
         public static string FormatAzeriDate(DateTime date)
         {

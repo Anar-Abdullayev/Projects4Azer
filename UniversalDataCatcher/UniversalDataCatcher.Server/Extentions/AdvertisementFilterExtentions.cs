@@ -36,10 +36,18 @@ namespace UniversalDataCatcher.Server.Extentions
                     param.Add("@PosterType", filter.Poster_Type.ToLower());
                 }
 
-                if (!string.IsNullOrEmpty(filter.City))
+                if (filter.City is { Count: > 0 })
                 {
-                    where.Add("address LIKE @CityPattern");
-                    param.Add("@CityPattern", filter.City + "%");
+                    var cityOrConditions = new List<string>();
+
+                    for (int i = 0; i < filter.City.Count; i++)
+                    {
+                        string paramName = $"@CityPattern{i}";
+                        cityOrConditions.Add($"address LIKE {paramName}");
+                        param.Add(paramName, filter.City[i] + "%");
+                    }
+
+                    where.Add("(" + string.Join(" OR ", cityOrConditions) + ")");
                 }
 
                 if (filter.HideRepeats)

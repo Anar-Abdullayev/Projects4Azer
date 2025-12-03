@@ -42,7 +42,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                 record.Rooms,
                 record.PosterPhone,
                 record.PosterName,
-                CreatedAt = record.CreatedAt.ToString(),
+                record.CreatedAt,
                 record.AdvLink,
                 record.BinaType,
                 record.Floor,

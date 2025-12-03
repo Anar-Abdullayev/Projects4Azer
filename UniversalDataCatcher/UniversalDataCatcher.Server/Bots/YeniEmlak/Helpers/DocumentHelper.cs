@@ -176,7 +176,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
         public static string? GetImageUrls(HtmlDocument doc)
         {
             var imageNodes = doc.DocumentNode.SelectNodes("//div[@class='imgbox']/div/a");
-            if (imageNodes.Count > 0)
+            if (imageNodes is not null && imageNodes.Count > 0)
             {
                 var imageUrls = imageNodes.Select(a => a.GetAttributeValue("href", ""));
                 return string.Join(", ", imageUrls);

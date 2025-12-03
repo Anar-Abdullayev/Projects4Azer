@@ -23,12 +23,12 @@
         public string? Post_Tip { get; set; }
         public string? Poster_Type { get; set; }
         public string? Poster_Phone { get; set; }
-        public string? Post_Create_Date { get; set; }
+        public DateTime? Post_Create_Date { get; set; }
         public DateTime InsertDate { get; set; }
         public DateTime Updated { get; set; }
         public string? Sayt { get; set; }
         public string? Sayt_Link { get; set; }
-        public int? Status { get; set; }
+        public DateTime? Status { get; set; }
         public int? ReferenceId { get; set; }
         public string? ImageUrls { get; set; }
 

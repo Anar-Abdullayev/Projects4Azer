@@ -31,7 +31,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers
             try
             {
                 await page.GotoAsync(url);
-                await page.WaitForSelectorAsync("price", new PageWaitForSelectorOptions { Timeout = 600000 });
+                await page.WaitForSelectorAsync("price", new PageWaitForSelectorOptions { Timeout = 180000 });
             }
             catch (TimeoutException ex)
             {
