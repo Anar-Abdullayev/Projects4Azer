@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Serilog;
 using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.Bina.Helpers;
 using UniversalDataCatcher.Server.Bots.Bina.Models;
@@ -38,6 +39,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                         DateTime endDate = DateTime.Today.AddDays(-dayDifference);
                         bool continueSearch = true;
                         int page = 1;
+                        logger.Information($"Servis başladılır. {endDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         await BinaAzHelper.StartInitialRun();
                         string? cursor = null;
                         Variables variables = new Variables() { first = 16, sort = "BUMPED_AT_DESC" };
@@ -56,18 +58,17 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                             foreach (var item in dataPage.Data.ItemsConnection.Edges)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{currentItem++}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} page) Starting process");
+                                logger.Information($"{currentItem++}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} səhifə) prosess başladıldı.");
                                 var property = item.Node.GetInitialProperty();
                                 if (property.UpdatedTime < endDate)
                                 {
-                                    logger.Information("Data older than 2 days reached, stopping the process.");
                                     continueSearch = false;
                                     break;
                                 }
                                 var existingRecord = database.FindById(property.Id);
                                 if (existingRecord is not null)
                                 {
-                                    logger.Information($"Recording with this id ({property.Id}) exists");
+                                    logger.Information($"{existingRecord.Id} - /items/{property.Id} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var retryDetails = 0;
@@ -88,12 +89,14 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                                 var contentProperty = await helper.GetPropertyFromRawHTML(htmlString, property);
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 database.InsertRecord(contentProperty);
+                                logger.Information($"Bazaya əlavə edildi.");
                                 Progress++;
                                 await Task.Delay(500, CancellationTokenSource.Token);
                             }
                             page++;
                             await Task.Delay(1500, CancellationTokenSource.Token);
                         }
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         SleepTime = DateTime.Now;
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
@@ -102,11 +105,11 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("Servis dayandırıldı.");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString());
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {
@@ -115,7 +118,6 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                     Progress = 0;
                     RepeatEvery = 0;
                     CancellationTokenSource.Dispose();
-                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }

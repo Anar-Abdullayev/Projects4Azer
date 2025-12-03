@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Serilog;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using UniversalDataCatcher.Server.Abstracts;
@@ -41,6 +42,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
                         targetDate = targetDate.AddDays(-dayDifference);
+                        logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!CancellationTokenSource.IsCancellationRequested)
                         {
                             logger.Information(page.ToString());
@@ -53,7 +55,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             foreach (var objJson in objects)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{row++}/{objects.Count} ({page} page) Starting process");
+                                logger.Information($"{row++}/{objects.Count} ({page} səhifə) prosess başladıldı.");
                                 string cleaned = Regex.Unescape(objJson);
                                 if (cleaned.Contains(""))
                                     if (cleaned.StartsWith("\"") && cleaned.EndsWith("\""))
@@ -76,16 +78,14 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
 
                                 if (item.RenewedAt < targetDate)
                                 {
-                                    logger.Information($"Old content ({item.Id}) found, moving to next content");
                                     oldContentCount++;
                                     continue;
                                 }
                                 if (_databaseService.FindById(item.Id) is not null)
                                 {
-                                    logger.Information($"Recording with this id ({item.Id}) exists");
+                                    logger.Information($"{item.Id} - {EvTenConstants.EvTenItemBaseUrl + item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
-                                logger.Information($"Starting to process id:({item.Id})");
                                 var detailedHtmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenItemBaseUrl + item.Id);
                                 merged = EvTenHelper.ExtractNextFData(detailedHtmlString);
                                 dict = EvTenHelper.ParseKeyValueMap2(merged);
@@ -101,29 +101,26 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 detailedItem.HasIpoteka = DocumentHelper.HasIpotekaInfo(detailedHtmlString);
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 _databaseService.InsertRecord(detailedItem);
+                                logger.Information($"Bazaya əlavə edildi.");
                                 Progress++;
-                                logger.Information($"Advertisement Id: {detailedItem.Id} has been inserted successfully");
                             }
                             if (oldContentCount >= objects.Count)
-                            {
-                                logger.Information("Old content threshold reached, moving to next cycle.");
                                 break;
-                            }
                             page++;
                         }
-                        logger.Information("Set to waiting");
                         SleepTime = DateTime.Now;
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("Service cancelled");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString());
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {

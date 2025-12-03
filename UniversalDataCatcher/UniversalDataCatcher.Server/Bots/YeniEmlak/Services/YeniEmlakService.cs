@@ -1,4 +1,5 @@
-﻿using Microsoft.Playwright;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Playwright;
 using Serilog;
 using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.YeniEmlak.Helpers;
@@ -37,6 +38,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
                         targetDate = targetDate.AddDays(-dayDifference);
+                        logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         await YeniEmlakHelper.InitializeChromiumAsync();
                         while (!CancellationTokenSource.IsCancellationRequested)
                         {
@@ -54,17 +56,15 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 var itemId = mainInfos.Item1;
                                 var itemDate = DateTime.ParseExact(mainInfos.Item2, "dd.MM.yyyy", null);
                                 var itemLink = mainInfos.Item3;
-
-                                logger.Information($"{row++}/{advItems.Count}({page} page) Starting to process id: {itemId}\n{itemLink}");
+                                logger.Information($"{row++}/{advItems.Count} ({page} səhifə) prosess başladıldı.");
                                 if (itemDate < targetDate)
                                 {
-                                    logger.Information($"Found old content. Moving to next");
                                     oldContentCount++;
                                     continue;
                                 }
                                 if (databaseService.FindById(int.Parse(itemId)) is not null)
                                 {
-                                    logger.Information("This item exists");
+                                    logger.Information($"{itemId} - {itemLink} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var detailHtmlDocumentString = await YeniEmlakHelper.GetDetailPageAsync(itemLink);
@@ -75,8 +75,8 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 property.AdvLink = itemLink;
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 databaseService.InsertRecord(property);
-                                Progress++;
-                                logger.Information($"Item Id with {item.Id} inserted successfully");
+                                Progress++; 
+                                logger.Information($"Bazaya əlavə edildi.");
                                 await Task.Delay(700, CancellationTokenSource.Token);
                             }
                             page++;
@@ -84,19 +84,19 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 break;
                             await Task.Delay(1500, CancellationTokenSource.Token);
                         }
-                        logger.Information("Set to waiting");
                         SleepTime = DateTime.Now;
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("Service stopped");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString());
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {

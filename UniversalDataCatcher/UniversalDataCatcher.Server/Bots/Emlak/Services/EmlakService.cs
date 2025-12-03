@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Serilog;
 using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.Emlak.Helpers;
 using UniversalDataCatcher.Server.Bots.Emlak.StaticConstants;
@@ -39,6 +40,7 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                         DateTime today = DateTime.Now;
                         DateTime targetDate = new DateTime(today.Year, today.Month, today.Day, 0, 0, 0);
                         targetDate = targetDate.AddDays(-dayDifference);
+                        logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!CancellationTokenSource.IsCancellationRequested)
                         {
                             TryAgain:
@@ -54,14 +56,13 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                             foreach (var item in advItems)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{row++}/{advItems.Count} ({page} page) Starting process");
+                                logger.Information($"{row++}/{advItems.Count} ({page} səhifə) prosess başladıldı.");
                                 var initialInfo = EmlakHelper.GetInitialInfosFromNode(item);
                                 var id = initialInfo.Item1;
                                 var advLink = EmlakConstants.HostUrl + initialInfo.Item2;
-                                logger.Information($"Processing link: {advLink}");
                                 if (databaseService.FindById(int.Parse(id)) is not null)
                                 {
-                                    logger.Information("Item exists in database. Moving to next");
+                                    logger.Information($"{id} - {advLink} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var detailedItemDocument = await EmlakHelper.GetPageDocumentAsync(advLink);
@@ -86,29 +87,27 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                                 }
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 databaseService.InsertRecord(property);
-                                logger.Information($"{id} has been inserted successfully");
+                                logger.Information($"Bazaya əlavə edildi.");
                                 Progress++;
                                 await Task.Delay(700, CancellationTokenSource.Token);
                             }
                             if (oldContentCount == advItems.Count)
-                            {
-                                logger.Information($"{oldContentCount} out of {advItems.Count} found as old. Ending search. Service will restart after {repeatEvery} minutes");
                                 break;
-                            }
                             page++;
                         }
                         SleepTime = DateTime.Now;
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("Service stopped");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString());
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {

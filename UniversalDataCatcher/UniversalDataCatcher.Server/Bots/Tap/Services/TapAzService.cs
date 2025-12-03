@@ -42,6 +42,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                         var tillDateString = FormatHelper.FormatAzeriDate(targetDate);
                         var formattedDates = FormatHelper.GetFormattedDatesUntil(targetDate);
                         string nextUrl = "/elanlar/dasinmaz-emlak";
+                        logger.Information($"Servis başladılır. {targetDate.ToString()} tarixinədək elanları çəkəcək. Bitdikdən {repeatEvery} dəqiqə sonra yenidən işə düşəcək");
                         while (!CancellationTokenSource.IsCancellationRequested && continueSearch)
                         {
                             var htmlContent = await tapazHelper.GetPage(nextUrl);
@@ -57,12 +58,11 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                     foreach (var propertyNode in propertyNodes)
                                     {
                                         CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} page)");
+                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} səhifə) prosess başladıldı.");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1));
                                         if (existingRecord != null)
                                         {
-                                            logger.Information($"ID-si {propertyNode.Item1} olan elan oxunulub. Ötürülür...");
-                                            logger.Information($"ID-si {propertyNode.Item1} üçün saytın URL-i: {propertyNode.Item2}");
+                                            logger.Information($"{existingRecord.Id} - {propertyNode.Item2} bazada tapıldı. Növbəti elana keçid edilir.");
                                             continue;
                                         }
                                         var detailHtml = await tapazHelper.GetPage(propertyNode.Item2);
@@ -74,7 +74,7 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                                         property.CreatedAt = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
                                         CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                         databaseService.InsertRecord(property);
-                                        logger.Information("Yeni elan tapıldı və məlumat bazasına əlavə edildi:");
+                                        logger.Information($"Bazaya əlavə edildi.");
                                         Progress++;
                                         await Task.Delay(TimeSpan.FromSeconds(0.5), CancellationTokenSource.Token);
                                     }
@@ -83,18 +83,18 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                             page++;
                             await Task.Delay(TimeSpan.FromSeconds(0.5), CancellationTokenSource.Token);
                         }
-                        logger.Information($"Gözləmə rejimində... Növbəti yoxlama {repeatEvery} dəqiqədən sonra baş tutacaq.");
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         SleepTime = DateTime.Now;
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("Servis dayandırıldı.");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString());
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {
@@ -103,7 +103,6 @@ namespace UniversalDataCatcher.Server.Bots.Tap.Services
                     Progress = 0;
                     RepeatEvery = 0;
                     CancellationTokenSource.Dispose();
-                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }

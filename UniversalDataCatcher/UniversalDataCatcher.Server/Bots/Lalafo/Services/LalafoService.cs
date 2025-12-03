@@ -1,4 +1,5 @@
-﻿using UniversalDataCatcher.Server.Abstracts;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using UniversalDataCatcher.Server.Abstracts;
 using UniversalDataCatcher.Server.Bots.Lalafo.Helpers;
 using UniversalDataCatcher.Server.Helpers;
 
@@ -44,17 +45,15 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             foreach (var item in items)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{itemPosition++}/{items.Count} ({page} page)");
+                                logger.Information($"{itemPosition++}/{items.Count} ({page} səhifə) prosess başladıldı.");
                                 if (databaseService.FindById(item.Id) != null)
                                 {
-                                    logger.Information($"{item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
-                                    logger.Information($"{item.Id} - {item.Url}");
+                                    logger.Information($"{item.Id} - {item.Url} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var createdDate = DateTimeOffset.FromUnixTimeSeconds(item.CreatedTime);
                                 if (createdDate < targetDate)
                                 {
-                                    logger.Information($"Id ({item.Id}) {targetDate.ToString()} tarixindən köhnədir. Növbətinə keçid edilir.");
                                     outDateCount++;
                                     continue;
                                 }
@@ -63,29 +62,30 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                                 propertyDetails.Ad_Label = item.Ad_Label;
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                 databaseService.InsertRecord(propertyDetails);
+                                logger.Information($"Bazaya əlavə edildi.");
                                 Progress++;
                                 await Task.Delay(1000, CancellationTokenSource.Token);
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
                             }
                             if (outDateCount == items.Count)
                             {
-                                logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                                 break;
                             }
                             page++;
                         }
                         SleepTime = DateTime.Now;
+                        logger.Information($"Elanlar limit tarixinə çatdı. Axtarış sonlanır. Növbəti axtarış {repeatEvery} dəqiqə sonra olacaq.");
                         await Task.Delay(TimeSpan.FromMinutes(repeatEvery), CancellationTokenSource.Token);
                     }
 
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("Servis dayandırıldı.");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex.ToString());
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {
@@ -94,7 +94,6 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                     Progress = 0;
                     RepeatEvery = 0;
                     CancellationTokenSource.Dispose();
-                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }

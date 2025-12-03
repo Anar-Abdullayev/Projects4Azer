@@ -50,16 +50,13 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                     foreach (var propertyNode in propertyNodes)
                                     {
                                         CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} page) Starting process");
+                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} səhifə) prosess başladıldı.");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1.Replace("elan_", "")));
-                                        //var existingRecord = databaseService.FindByElanLink(propertyNode.Item2);
                                         if (existingRecord != null)
                                         {
-                                            logger.Information($"{existingRecord.Id} bazada tapıldı. Növbəti elana keçid edilir.");
-                                            logger.Information($"{existingRecord.Id} - {propertyNode.Item2}");
+                                            logger.Information($"{existingRecord.Id} - {propertyNode.Item2} bazada tapıldı. Növbəti elana keçid edilir.");
                                             continue;
                                         }
-
                                         var detailHtml = await ArendaHelper.GetPropertyDetailPage(propertyNode.Item2);
                                         if (detailHtml == null)
                                             continue;
@@ -69,6 +66,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                         property.Created_At = FormatHelper.ParseAzeriDateWithTime(propertyNode.Item3);
                                         CancellationTokenSource.Token.ThrowIfCancellationRequested();
                                         databaseService.InsertRecord(property);
+                                        logger.Information($"Bazaya əlavə edildi.");
                                         Progress++;
                                         await Task.Delay(TimeSpan.FromSeconds(1), CancellationTokenSource.Token);
                                     }
@@ -85,11 +83,11 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                 }
                 catch (OperationCanceledException)
                 {
-                    logger.Information("ERROR: Arenda Bot Service has been cancelled!");
+                    logger.Information("Servise dayandırıldı.");
                 }
                 catch (Exception ex)
                 {
-                    logger.Error($"ERROR: An unexpected error occurred in Arenda Bot Service: {ex.Message}");
+                    logger.Error($"Servisdə xəta baş verdi: {ex.Message}");
                 }
                 finally
                 {
@@ -98,7 +96,6 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                     Progress = 0;
                     RepeatEvery = 0;
                     CancellationTokenSource.Dispose();
-                    logger.Information("Servis dayandırıldı.");
                 }
             });
         }
