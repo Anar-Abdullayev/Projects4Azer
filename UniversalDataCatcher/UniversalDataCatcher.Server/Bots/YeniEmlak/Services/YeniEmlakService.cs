@@ -56,7 +56,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 var itemId = mainInfos.Item1;
                                 var itemDate = DateTime.ParseExact(mainInfos.Item2, "dd.MM.yyyy", null);
                                 var itemLink = mainInfos.Item3;
-                                logger.Information($"{row++}/{advItems.Count} ({page} səhifə) prosess başladıldı.");
+                                logger.Information($"{row++}/{advItems.Count} ({page} səhifə) {itemId} - {itemLink} prosess başladıldı.");
                                 if (itemDate < targetDate)
                                 {
                                     oldContentCount++;
@@ -64,7 +64,7 @@ namespace UniversalDataCatcher.Server.Bots.YeniEmlak.Services
                                 }
                                 if (databaseService.FindById(int.Parse(itemId)) is not null)
                                 {
-                                    logger.Information($"{itemId} - {itemLink} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    logger.Information($"{itemId} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var detailHtmlDocumentString = await YeniEmlakHelper.GetDetailPageAsync(itemLink);

@@ -45,10 +45,10 @@ namespace UniversalDataCatcher.Server.Bots.Lalafo.Services
                             foreach (var item in items)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{itemPosition++}/{items.Count} ({page} səhifə) prosess başladıldı.");
+                                logger.Information($"{itemPosition++}/{items.Count} ({page} səhifə) {item.Id} - {item.Url} prosess başladıldı.");
                                 if (databaseService.FindById(item.Id) != null)
                                 {
-                                    logger.Information($"{item.Id} - {item.Url} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    logger.Information($"{item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var createdDate = DateTimeOffset.FromUnixTimeSeconds(item.CreatedTime);

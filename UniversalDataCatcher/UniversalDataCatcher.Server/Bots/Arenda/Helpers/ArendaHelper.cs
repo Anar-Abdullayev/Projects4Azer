@@ -98,7 +98,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             var roomInfo = propertyMainInfos?.FirstOrDefault(info => info.ToLower().Contains("otaq"));
             var sizeInfo = propertyMainInfos?.FirstOrDefault(info => info.ToLower().Contains(" m2"));
             int? roomCount = roomInfo == null ? null : int.Parse(roomInfo.Replace(" otaq", ""));
-            float? propertySize = sizeInfo == null ? null : float.Parse(sizeInfo.Replace(" m2", ""), CultureInfo.InvariantCulture);
+            float? propertySize = sizeInfo == null ? null : float.Parse(sizeInfo.Replace(" m2", "").Replace(",","."), CultureInfo.InvariantCulture);
             var description = DocumentHelper.GetDescription(leftSideNode);
             var propertyFeatures = DocumentHelper.GetPropertyFeatures(leftSideNode);
             var address = DocumentHelper.GetAddress(leftSideNode);

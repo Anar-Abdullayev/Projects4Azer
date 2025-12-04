@@ -56,13 +56,13 @@ namespace UniversalDataCatcher.Server.Bots.Emlak.Services
                             foreach (var item in advItems)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{row++}/{advItems.Count} ({page} səhifə) prosess başladıldı.");
                                 var initialInfo = EmlakHelper.GetInitialInfosFromNode(item);
                                 var id = initialInfo.Item1;
                                 var advLink = EmlakConstants.HostUrl + initialInfo.Item2;
+                                logger.Information($"{row++}/{advItems.Count} ({page} səhifə) {id} - {advLink} prosess başladıldı.");
                                 if (databaseService.FindById(int.Parse(id)) is not null)
                                 {
-                                    logger.Information($"{id} - {advLink} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    logger.Information($"{id} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var detailedItemDocument = await EmlakHelper.GetPageDocumentAsync(advLink);

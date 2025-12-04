@@ -50,11 +50,11 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Services
                                     foreach (var propertyNode in propertyNodes)
                                     {
                                         CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} səhifə) prosess başladıldı.");
+                                        logger.Information($"{row++}/{propertyNodes.Count} ({page} səhifə) {propertyNode.Item1} - {propertyNode.Item2} prosess başladıldı.");
                                         var existingRecord = databaseService.FindById(int.Parse(propertyNode.Item1.Replace("elan_", "")));
                                         if (existingRecord != null)
                                         {
-                                            logger.Information($"{existingRecord.Id} - {propertyNode.Item2} bazada tapıldı. Növbəti elana keçid edilir.");
+                                            logger.Information($"{existingRecord.Id} bazada tapıldı. Növbəti elana keçid edilir.");
                                             continue;
                                         }
                                         var detailHtml = await ArendaHelper.GetPropertyDetailPage(propertyNode.Item2);

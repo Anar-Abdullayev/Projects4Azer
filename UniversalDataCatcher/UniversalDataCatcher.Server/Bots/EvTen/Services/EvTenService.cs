@@ -55,7 +55,6 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                             foreach (var objJson in objects)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{row++}/{objects.Count} ({page} səhifə) prosess başladıldı.");
                                 string cleaned = Regex.Unescape(objJson);
                                 if (cleaned.Contains(""))
                                     if (cleaned.StartsWith("\"") && cleaned.EndsWith("\""))
@@ -74,6 +73,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 );
                                 EvTenProperty item = null;
                                 item = JsonSerializer.Deserialize<EvTenProperty>(cleaned)!;
+                                logger.Information($"{row++}/{objects.Count} ({page} səhifə) {item.Id} - {EvTenConstants.EvTenItemBaseUrl + item.Id} prosess başladıldı.");
                                 item.RenewedAt = item.RenewedAt.AddHours(4);
 
                                 if (item.RenewedAt < targetDate)
@@ -83,7 +83,7 @@ namespace UniversalDataCatcher.Server.Bots.EvTen.Services
                                 }
                                 if (_databaseService.FindById(item.Id) is not null)
                                 {
-                                    logger.Information($"{item.Id} - {EvTenConstants.EvTenItemBaseUrl + item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    logger.Information($"{item.Id} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var detailedHtmlString = await EvTenHelper.GetPageAsync(EvTenConstants.EvTenItemBaseUrl + item.Id);

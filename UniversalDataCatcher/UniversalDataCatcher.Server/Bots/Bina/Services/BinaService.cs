@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Serilog;
 using UniversalDataCatcher.Server.Abstracts;
+using UniversalDataCatcher.Server.Bots.Bina.Constants;
 using UniversalDataCatcher.Server.Bots.Bina.Helpers;
 using UniversalDataCatcher.Server.Bots.Bina.Models;
 using UniversalDataCatcher.Server.Helpers;
@@ -58,8 +59,8 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                             foreach (var item in dataPage.Data.ItemsConnection.Edges)
                             {
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                logger.Information($"{currentItem++}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} səhifə) prosess başladıldı.");
                                 var property = item.Node.GetInitialProperty();
+                                logger.Information($"{currentItem++}/{dataPage.Data.ItemsConnection.Edges.Count} ({page} səhifə) {property.Id} - {Constants.Constants.BaseUrl}/items/{property.Id} prosess başladıldı.");
                                 if (property.UpdatedTime < endDate)
                                 {
                                     continueSearch = false;
@@ -68,7 +69,7 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                                 var existingRecord = database.FindById(property.Id);
                                 if (existingRecord is not null)
                                 {
-                                    logger.Information($"{existingRecord.Id} - /items/{property.Id} bazada tapıldı. Növbəti elana keçid edilir.");
+                                    logger.Information($"{existingRecord.Id} bazada tapıldı. Növbəti elana keçid edilir.");
                                     continue;
                                 }
                                 var retryDetails = 0;
