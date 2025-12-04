@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Caching.Memory;
+using System.Globalization;
 using UniversalDataCatcher.Server.Services.Arenda.Model;
 
 namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
@@ -97,7 +98,7 @@ namespace UniversalDataCatcher.Server.Services.Arenda.Helpers
             var roomInfo = propertyMainInfos?.FirstOrDefault(info => info.ToLower().Contains("otaq"));
             var sizeInfo = propertyMainInfos?.FirstOrDefault(info => info.ToLower().Contains(" m2"));
             int? roomCount = roomInfo == null ? null : int.Parse(roomInfo.Replace(" otaq", ""));
-            float? propertySize = sizeInfo == null ? null : float.Parse(sizeInfo.Replace(" m2", ""));
+            float? propertySize = sizeInfo == null ? null : float.Parse(sizeInfo.Replace(" m2", ""), CultureInfo.InvariantCulture);
             var description = DocumentHelper.GetDescription(leftSideNode);
             var propertyFeatures = DocumentHelper.GetPropertyFeatures(leftSideNode);
             var address = DocumentHelper.GetAddress(leftSideNode);
