@@ -41,6 +41,9 @@ namespace UniversalDataCatcher.Server.Services
             EnsureTableCreated(evtenTableName);
             EnsureTableCreated(yeniEmlakTableName);
             EnsureTableCreated(emlakTableName);
+            EnsureHelperTableCreated();
+            EnsureStoreProcedureCreated();
+
         }
         private static void EnsureDatabaseCreated(string _databaseName)
         {
@@ -56,7 +59,6 @@ namespace UniversalDataCatcher.Server.Services
                 connection.Close();
             }
         }
-
         private static void EnsureTableCreated(string tableName)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -114,6 +116,117 @@ namespace UniversalDataCatcher.Server.Services
             if (_tables.ContainsKey(tableKey))
                 return _tables[tableKey];
             throw new Exception($"{tableKey} not found in configuration");
+        }
+        private static void EnsureStoreProcedureCreated()
+        {
+            string procedureCreationQuery = @"CREATE OR ALTER PROCEDURE dbo.sp_UpdateReferenceIds_Final
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @LastId BIGINT;
+
+    SELECT @LastId = LastProcessedId
+    FROM dbo.LastProcessedRow
+    WHERE Id = 1;
+
+    IF OBJECT_ID('tempdb..#TempPhone') IS NOT NULL DROP TABLE #TempPhone;
+
+    SELECT 
+        id AS ListingId,
+        LTRIM(RTRIM(value)) AS PhoneNumber
+    INTO #TempPhone
+    FROM dbo.post
+    CROSS APPLY STRING_SPLIT(poster_phone, ',')
+    WHERE poster_phone IS NOT NULL;
+
+    CREATE INDEX IX_TempPhone_ListingId ON #TempPhone(ListingId);
+    CREATE INDEX IX_TempPhone_PhoneNumber ON #TempPhone(PhoneNumber);
+
+    ;WITH Groups AS (
+        SELECT 
+            p.id,
+            p.sayt,
+            p.area,
+            p.torpaqarea,
+            p.amount,
+            p.room,
+            p.floor,
+            tp.PhoneNumber,
+            DENSE_RANK() OVER (
+                ORDER BY 
+                    p.area, p.torpaqarea, p.amount, p.room, p.floor, tp.PhoneNumber
+            ) AS GroupKey
+        FROM dbo.post p
+        JOIN #TempPhone tp ON tp.ListingId = p.Id
+    ),
+    Ranked AS (
+        SELECT *,
+            CASE 
+                WHEN sayt = 'BinaAz' THEN 1
+                WHEN sayt = 'TapAz' THEN 2
+                ELSE 3
+            END AS Priority
+        FROM Groups
+    ),
+    Ordered AS (
+        SELECT *,
+            ROW_NUMBER() OVER (
+                PARTITION BY GroupKey
+                ORDER BY Priority, Id
+            ) AS rn
+        FROM Ranked
+    ),
+    Winners AS (
+        SELECT GroupKey, Id AS WinnerId
+        FROM Ordered
+        WHERE rn = 1
+    )
+
+    UPDATE p
+    SET p.ReferenceId = w.WinnerId
+    FROM dbo.post p
+    JOIN Ordered o ON o.Id = p.Id
+    JOIN Winners w ON w.GroupKey = o.GroupKey
+    WHERE p.Id <> w.WinnerId; 
+
+    DECLARE @MaxId BIGINT;
+    SELECT @MaxId = MAX(Id) FROM dbo.post;
+
+    UPDATE dbo.LastProcessedRow
+    SET LastProcessedId = @MaxId
+    WHERE Id = 1;
+
+    DROP TABLE #TempPhone;
+END;
+";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Execute(procedureCreationQuery);
+            }
+        }
+        private static void EnsureHelperTableCreated()
+        {
+            string sqlQuery = @"IF NOT EXISTS (
+    SELECT 1 
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = 'dbo'
+      AND TABLE_NAME = 'LastProcessedRow'
+)
+BEGIN
+    CREATE TABLE dbo.LastProcessedRow
+    (
+        Id INT PRIMARY KEY,  
+        LastProcessedId BIGINT
+    );
+
+    INSERT INTO dbo.LastProcessedRow (Id, LastProcessedId)
+    VALUES (1, 0);
+END";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Execute(sqlQuery);
+            }
         }
     }
 }
