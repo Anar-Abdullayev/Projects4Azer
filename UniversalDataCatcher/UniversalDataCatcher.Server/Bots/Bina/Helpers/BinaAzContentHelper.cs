@@ -1,4 +1,7 @@
 ﻿using HtmlAgilityPack;
+using System.Reflection.Metadata;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using UniversalDataCatcher.Server.Bots.Bina.Models;
 
 namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
@@ -23,6 +26,48 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Helpers
                 }
             }
             return null;
+        }
+
+        public BinaAzPropertyDetails? GetItemDetails(string htmlString)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(htmlString);
+            var scriptNode = doc.DocumentNode.SelectNodes("//script")?.FirstOrDefault(n => n.InnerText.Contains("currentItemData"));
+            if (scriptNode is null)
+                return null;
+            string script = scriptNode.InnerText;
+            string key = "\"currentItemData\"";
+
+            int startIndex = script.IndexOf(key);
+            if (startIndex == -1)
+            {
+                Console.WriteLine("currentItemData not found");
+                return null;
+            }
+
+            int braceStart = script.IndexOf('{', startIndex);
+            if (braceStart == -1)
+            {
+                Console.WriteLine("Opening brace not found");
+                return null;
+            }
+
+            int braceCount = 0;
+            int i = braceStart;
+            for (; i < script.Length; i++)
+            {
+                if (script[i] == '{') braceCount++;
+                if (script[i] == '}') braceCount--;
+
+                if (braceCount == 0)
+                {
+                    i++;
+                    break;
+                }
+            }
+            string jsonText = script.Substring(braceStart, i - braceStart);
+            var detailedProperty = JsonSerializer.Deserialize<BinaAzPropertyDetails>(jsonText);
+            return detailedProperty;
         }
 
         public List<Tuple<string, string, string>>? GetPropertiesFromContent(HtmlDocument doc, List<string> formattedDates, ref bool continueSearch)

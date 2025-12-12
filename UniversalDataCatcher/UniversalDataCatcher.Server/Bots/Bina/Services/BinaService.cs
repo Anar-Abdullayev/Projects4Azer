@@ -87,10 +87,12 @@ namespace UniversalDataCatcher.Server.Bots.Bina.Services
                                     }
                                     goto TryGettingDetails;
                                 }
-                                var contentProperty = await helper.GetPropertyFromRawHTML(htmlString, property);
+                                var jsonText = helper.GetItemDetails(htmlString);
+
+                                //var contentProperty = await helper.GetPropertyFromRawHTML(htmlString, property);
                                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                                database.InsertRecord(contentProperty);
-                                logger.Information($"Bazaya əlavə edildi.");
+                                //database.InsertRecord(contentProperty);
+                                //logger.Information($"Bazaya əlavə edildi.");
                                 Progress++;
                                 await Task.Delay(500, CancellationTokenSource.Token);
                             }

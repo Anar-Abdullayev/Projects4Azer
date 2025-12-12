@@ -1,0 +1,195 @@
+{
+    "__typename": "Item",
+    "id": "5613802",
+    "breadcrumbs": [
+        {
+            "__typename": "Breadcrumb",
+            "name": "Daşınmaz əmlak",
+            "path": "/items/all"
+        },
+        {
+            "__typename": "Breadcrumb",
+            "name": "Bakı",
+            "path": "/baki"
+        },
+        {
+            "__typename": "Breadcrumb",
+            "name": "Kirayə",
+            "path": "/kiraye"
+        },
+        {
+            "__typename": "Breadcrumb",
+            "name": "2 otaqlı yeni tikililər",
+            "path": "/kiraye/menziller/yeni-tikili/2-otaqli"
+        }
+    ],
+    "address": "Zivərbəy Əhmədbəyov küç.",
+    "description": "Nizami MS \r\nQoçətin düz yaninda \r\nLazim gələrsə Əşya və Dizayn dəyişiyliyi ola biler \r\nboşda vermək mümkündür \r\nƏlavə Məlumat üçün Zəng və Whatsapp aktivdir\r\nXIDMƏT HAQQI 30%",
+    "leased": true,
+    "rooms": 2,
+    "floor": 2,
+    "floors": 20,
+    "metaTags": [
+        {
+            "__typename": "MetaTag",
+            "name": "title",
+            "content": "2 otaqlı yeni tikili — 40 m² — Nizami m., Bakı, Azərbaycan (5613802)"
+        },
+        {
+            "__typename": "MetaTag",
+            "name": "description",
+            "content": "Nizami MS \r\nQoçətin düz yaninda \r\nLazim gələrsə Əşya və Dizayn dəyişiyliyi ola biler \r\nboşda vermək mümkündür \r\nƏlavə..."
+        }
+    ],
+    "hasBillOfSale": false,
+    "hasMortgage": false,
+    "hasRepair": true,
+    "state": "PUBLISHED",
+    "isExpiredManually": false,
+    "isKapitalbankApplicable": false,
+    "contactName": "Mirseymur",
+    "contactTypeName": "vasitəçi (agent)",
+    "buildingTypeName": null,
+    "longitude": 49.83154267681648,
+    "latitude": 40.37948251338068,
+    "path": "/items/5613802",
+    "business": {
+        "__typename": "Agency",
+        "id": "648",
+        "itemsCount": 681,
+        "logoUrl": "https://bina.azstatic.com/uploads/o450x450/2024%2F07%2F31%2F09%2F02%2F10%2F17bd5575-d399-4a05-b1db-f5d0adb5ef01%2F12183_ogtQftp0VNM0b8HrfrDIcQ.jpg",
+        "name": "Atilla Estate MMC",
+        "path": "/agentlikler/atilla-estate-mmc",
+        "viewsCount": 15202,
+        "schedule": "Hər gün: 10:00-19:00",
+        "contactAddress": "Xətai r., Mehdi Mehdizadə küç.",
+        "latitude": 40.38124462739964,
+        "longitude": 49.86995890542531,
+        "city": {
+            "__typename": "City",
+            "name": "Bakı"
+        }
+    },
+    "nearestLocations": [
+        {
+            "__typename": "Location",
+            "path": "/baki/yasamal",
+            "fullName": "Yasamal r.",
+            "id": "56"
+        },
+        {
+            "__typename": "Location",
+            "path": "/baki/nizami-metrosu",
+            "fullName": "Nizami m.",
+            "id": "35"
+        },
+        {
+            "__typename": "Location",
+            "path": "/baki/besmertebe",
+            "fullName": "Beşmərtəbə ",
+            "id": "168"
+        }
+    ],
+    "updatedAt": "2025-12-12T18:37:30+04:00",
+    "expiresAt": null,
+    "views": 147,
+    "isFeatured": false,
+    "isVipped": true,
+    "rejectReason": null,
+    "location": {
+        "__typename": "Location",
+        "fullName": "Nizami m.",
+        "path": "/baki/nizami-metrosu"
+    },
+    "landArea": null,
+    "area": {
+        "__typename": "Area",
+        "units": "m²",
+        "value": 40
+    },
+    "price": {
+        "__typename": "Price",
+        "currency": "AZN",
+        "value": 1300
+    },
+    "paidDaily": false,
+    "company": {
+        "__typename": "Company",
+        "id": "64941",
+        "name": "Mirseymur",
+        "targetType": "AGENCY"
+    },
+    "category": {
+        "__typename": "Category",
+        "id": "2",
+        "hasFloor": true,
+        "hasLandArea": false,
+        "name": "Yeni tikili",
+        "pluralName": "Yeni tikililər",
+        "slug": "menziller/yeni-tikili",
+        "title": "Mənzillər / Yeni tikililər"
+    },
+    "city": {
+        "__typename": "City",
+        "id": "1",
+        "name": "Bakı",
+        "path": "/baki",
+        "slug": "baki"
+    },
+    "photos": [
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2Fbc50a781-32a5-48a9-b334-c115a28a712d%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2Fbc50a781-32a5-48a9-b334-c115a28a712d%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2Fbc50a781-32a5-48a9-b334-c115a28a712d%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2F6868aa36-dcc3-4731-a2ac-5fb772592973%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2F6868aa36-dcc3-4731-a2ac-5fb772592973%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2F6868aa36-dcc3-4731-a2ac-5fb772592973%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2Ff72f02e8-7061-4bf9-bf26-04e51181ec5c%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2Ff72f02e8-7061-4bf9-bf26-04e51181ec5c%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2Ff72f02e8-7061-4bf9-bf26-04e51181ec5c%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2Fbdbcafc5-db78-4814-a2dd-4f4e96845f46%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2Fbdbcafc5-db78-4814-a2dd-4f4e96845f46%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2Fbdbcafc5-db78-4814-a2dd-4f4e96845f46%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2Fe95ae4d8-d8bc-4aa8-9938-bc32cb37faa2%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2Fe95ae4d8-d8bc-4aa8-9938-bc32cb37faa2%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2Fe95ae4d8-d8bc-4aa8-9938-bc32cb37faa2%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2F307aac55-7c6b-4293-bd32-1a845b1cd965%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2F307aac55-7c6b-4293-bd32-1a845b1cd965%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2F307aac55-7c6b-4293-bd32-1a845b1cd965%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2F4eade9a7-0901-48f2-a53e-f02b39d53422%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2F4eade9a7-0901-48f2-a53e-f02b39d53422%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2F4eade9a7-0901-48f2-a53e-f02b39d53422%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2F7f4b9875-8fb3-4c9b-bb54-902009bd6587%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2F7f4b9875-8fb3-4c9b-bb54-902009bd6587%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2F7f4b9875-8fb3-4c9b-bb54-902009bd6587%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        },
+        {
+            "__typename": "Photo",
+            "full": "https://bina.azstatic.com/uploads/full/2025%2F10%2F25%2F12%2F03%2F40%2F4e3a81af-6b41-40bb-aa45-c9bc6509fa13%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "f660x496": "https://bina.azstatic.com/uploads/f660x496/2025%2F10%2F25%2F12%2F03%2F40%2F4e3a81af-6b41-40bb-aa45-c9bc6509fa13%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg",
+            "thumbnail": "https://bina.azstatic.com/uploads/thumbnail/2025%2F10%2F25%2F12%2F03%2F40%2F4e3a81af-6b41-40bb-aa45-c9bc6509fa13%2F89649_IdiJWhN4F5E3SSESYyyqZg.jpg"
+        }
+    ]
+}
